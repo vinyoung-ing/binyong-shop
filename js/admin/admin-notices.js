@@ -84,8 +84,13 @@ function render(notices) {
 
 async function init() {
   content.innerHTML = `<p class="muted">불러오는 중...</p>`;
-  const notices = await loadNotices();
-  render(notices);
+  try {
+    const notices = await loadNotices();
+    render(notices);
+  } catch (e) {
+    console.error(e);
+    content.innerHTML = `<p class="muted">공지사항을 불러오지 못했습니다. Firestore 규칙과 로그인 상태를 확인해주세요.</p>`;
+  }
 }
 
 init();

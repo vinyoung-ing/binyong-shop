@@ -140,8 +140,19 @@ function attachHandlers() {
 
 async function init() {
   content.innerHTML = `<p class="muted">불러오는 중...</p>`;
-  await reload();
-  render();
+  try {
+    await reload();
+    render();
+  } catch (e) {
+    console.error(e);
+    content.innerHTML = `
+      <div class="admin-card">
+        <p class="muted">배너 정보를 불러오지 못했습니다. Firestore 규칙에 banners/settings 컬렉션이
+        허용되어 있는지, 로그인이 되어 있는지 확인해주세요.</p>
+        <p class="muted" style="margin-top:8px; font-family: ui-monospace, Consolas, monospace; font-size:12px;">${escapeHtml(e.message || String(e))}</p>
+      </div>
+    `;
+  }
 }
 
 init();
