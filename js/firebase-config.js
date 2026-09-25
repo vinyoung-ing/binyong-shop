@@ -6,10 +6,10 @@
 // Firebase 콘솔에서 미리 활성화해두어야 합니다.
 
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyB0BmvEriEnpkfitsXO8jA7sX6W62mfGNo",
+  authDomain: "binyong-shop.firebaseapp.com",
+  projectId: "binyong-shop",
+  storageBucket: "binyong-shop.firebasestorage.app",
+  messagingSenderId: "202298025655",
+  appId: "1:202298025655:web:db62676f1d8d6666c30f32",
 };
