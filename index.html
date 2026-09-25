@@ -29,7 +29,7 @@
   <footer id="site-footer"></footer>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "./js/common.js";
+    import { renderHeader, renderFooter, initScrollReveal } from "./js/common.js";
     import { listCategories } from "./js/catalog.js";
     import { renderBannerCarousel } from "./js/banner-carousel.js";
 
@@ -49,7 +49,7 @@
           .map((c) => {
             const isActive = c.status === "active";
             return `
-              <div class="category-card ${isActive ? "" : "disabled"}">
+              <div class="category-card ${isActive ? "" : "disabled"}" data-reveal>
                 <span class="badge ${isActive ? "active" : "coming-soon"}">
                   ${isActive ? "운영중" : "오픈예정"}
                 </span>
@@ -64,6 +64,7 @@
             `;
           })
           .join("");
+        initScrollReveal();
       } catch (e) {
         grid.innerHTML = `<p class="muted">카테고리를 불러오지 못했습니다. Firebase 설정을 확인해주세요.</p>`;
         console.error(e);

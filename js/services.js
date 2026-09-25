@@ -1,4 +1,4 @@
-import { renderHeader, renderFooter, formatPrice, addToCart, getCart, removeFromCart } from "./common.js";
+import { renderHeader, renderFooter, formatPrice, addToCart, getCart, removeFromCart, initScrollReveal } from "./common.js";
 import { listCategories, loadCategoryFull } from "./catalog.js";
 
 renderHeader("services");
@@ -96,7 +96,7 @@ async function renderCategory(category) {
   groupsEl.innerHTML = groups
     .map(
       (g) => `
-      <div class="price-group">
+      <div class="price-group" data-reveal>
         <div class="price-group-header">
           <h3>${g.name}</h3>
           ${g.note ? `<div class="group-note">${g.note}</div>` : ""}
@@ -167,6 +167,8 @@ async function renderCategory(category) {
       setTimeout(() => (btn.textContent = "담기"), 900);
     });
   });
+
+  initScrollReveal();
 }
 
 function renderSelectedPanel() {

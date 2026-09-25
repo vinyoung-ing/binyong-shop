@@ -143,3 +143,32 @@ export function formatPrice(num) {
   if (Number.isNaN(n)) return "-";
   return n.toLocaleString("ko-KR", { maximumFractionDigits: 2 });
 }
+
+// [data-reveal] 요소가 화면에 들어오면 살짝 떠오르며 나타나는 스크롤 모션.
+// 동적으로 새로 그려진 화면에서도 다시 불러 쓸 수 있도록 매번 관측 대상을 새로 찾는다.
+export function initScrollReveal(root = document) {
+  const items = root.querySelectorAll("[data-reveal]:not(.is-visible)");
+  if (!items.length) return;
+
+  if (!("IntersectionObserver" in window)) {
+    items.forEach((el) => el.classList.add("is-visible"));
+    return;
+  }
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          io.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+  );
+
+  items.forEach((el, i) => {
+    el.style.transitionDelay = `${Math.min(i, 6) * 60}ms`;
+    io.observe(el);
+  });
+}

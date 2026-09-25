@@ -25,7 +25,8 @@ input, textarea, select { font: inherit; }
   --muted: #767676;
   --border: #e2e2e2;
   --accent: #1a1a1a;
-  --accent-2: #1a1a1a;
+  --accent-deep: #1a1a1a;
+  --accent-ink: #ffffff;
   --accent-soft: #f0f0f0;
   --danger: #c0392b;
   --success: #1e824c;
@@ -36,22 +37,23 @@ input, textarea, select { font: inherit; }
 }
 
 /* 고객 대상 페이지(스토어프론트)에 입히는 밝고 모던한 테마.
-   로즈쿼츠(핑크) + 세레니티(블루) 파스텔 그라디언트를 포인트로 쓰는 화이트 베이스.
+   브랜드 컬러 #FFCED8(블러쉬 핑크) 하나를 중심으로 한 화이트 베이스, 클린한 톤.
    관리자 화면은 <body>에 이 클래스가 없어 위 기본값을 그대로 씁니다. */
 body.storefront {
-  --bg: #fbfbfe;
+  --bg: #fffbfb;
   --surface: #ffffff;
-  --surface-2: #f6f4f9;
-  --text: #23242e;
-  --muted: #767b93;
-  --border: #eceaf3;
-  --accent: #ff6f91;
-  --accent-2: #6c8cff;
-  --accent-soft: rgba(255, 111, 145, 0.1);
+  --surface-2: #fff3f5;
+  --text: #262220;
+  --muted: #857c7a;
+  --border: #f5dfe4;
+  --accent: #ffced8;
+  --accent-deep: #e48aa0;
+  --accent-ink: #2b221f;
+  --accent-soft: rgba(255, 206, 216, 0.32);
   --danger: #e0555f;
   --success: #22a06b;
-  --shadow-card: 0 1px 2px rgba(35, 36, 46, 0.04);
-  --shadow-lift: 0 22px 44px -20px rgba(108, 76, 230, 0.28);
+  --shadow-card: 0 1px 2px rgba(43, 34, 31, 0.04);
+  --shadow-lift: 0 22px 44px -20px rgba(228, 138, 160, 0.4);
 }
 
 .page-container {
@@ -94,7 +96,7 @@ body.storefront #site-header {
   letter-spacing: -0.01em;
 }
 body.storefront .logo-kr {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  background: linear-gradient(135deg, var(--accent-deep) 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -255,11 +257,19 @@ body.storefront .hero::before {
   position: absolute;
   inset: -20%;
   background:
-    radial-gradient(620px 380px at 12% -10%, rgba(255, 143, 171, 0.4), transparent 60%),
-    radial-gradient(560px 360px at 88% 0%, rgba(110, 168, 254, 0.36), transparent 60%),
-    radial-gradient(520px 320px at 50% 115%, rgba(255, 200, 220, 0.28), transparent 60%);
+    radial-gradient(620px 380px at 12% -10%, rgba(255, 206, 216, 0.55), transparent 60%),
+    radial-gradient(560px 360px at 88% 0%, rgba(228, 138, 160, 0.32), transparent 60%),
+    radial-gradient(520px 320px at 50% 115%, rgba(255, 226, 233, 0.4), transparent 60%);
   filter: blur(8px);
   pointer-events: none;
+  animation: blobDrift 16s ease-in-out infinite;
+}
+@keyframes blobDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-2%, 3%) scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.storefront .hero::before { animation: none; }
 }
 .hero > * { position: relative; }
 .hero h1 {
@@ -271,18 +281,43 @@ body.storefront .hero::before {
 .hero p { color: var(--muted); font-size: 15px; margin: 0 0 28px; }
 .hero .btn-primary { display: inline-block; }
 
+@keyframes fadeUpIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+body.storefront .hero h1 { animation: fadeUpIn 0.7s ease both; }
+body.storefront .hero p { animation: fadeUpIn 0.7s ease 0.1s both; }
+body.storefront .hero .btn-primary { animation: fadeUpIn 0.7s ease 0.2s both; }
+
+/* 스크롤하면 나타나는 요소들 (motion) */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+[data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  body.storefront .hero h1,
+  body.storefront .hero p,
+  body.storefront .hero .btn-primary {
+    animation: none;
+  }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
+
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-ink);
   padding: 13px 26px;
   border-radius: var(--radius);
   font-weight: 700;
   font-size: 14px;
   border: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
-body.storefront .btn-primary { box-shadow: 0 14px 28px -12px rgba(255, 111, 145, 0.55); }
-.btn-primary:hover { transform: translateY(-1px); opacity: 0.94; }
+body.storefront .btn-primary { box-shadow: 0 14px 28px -12px rgba(228, 138, 160, 0.55); }
+.btn-primary:hover { transform: translateY(-1px); background: var(--accent-deep); }
 .btn-secondary {
   background: transparent;
   color: var(--text);
@@ -356,12 +391,12 @@ body.storefront .btn-primary { box-shadow: 0 14px 28px -12px rgba(255, 111, 145,
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .category-tabs button.active {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-ink);
   border-color: transparent;
 }
 body.storefront .category-tabs button.active {
-  box-shadow: 0 10px 22px -10px rgba(255, 111, 145, 0.55);
+  box-shadow: 0 10px 22px -10px rgba(228, 138, 160, 0.5);
 }
 .category-tabs button:disabled {
   color: var(--muted);
@@ -436,16 +471,16 @@ body.storefront .category-tabs button.active {
 .btn-add {
   padding: 8px 14px;
   border-radius: 6px;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--accent-deep);
   background: transparent;
-  color: var(--accent);
+  color: var(--accent-deep);
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
   min-height: 36px;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.btn-add:hover { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border-color: transparent; }
+.btn-add:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
 /* ---------- 선택한 항목 패널 ---------- */
 .selected-panel {

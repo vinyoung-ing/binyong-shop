@@ -19,7 +19,7 @@
   <footer id="site-footer"></footer>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "./js/common.js";
+    import { renderHeader, renderFooter, initScrollReveal } from "./js/common.js";
     import { db, collection, getDocs, query, orderBy } from "./js/firebase-init.js";
 
     renderHeader("notice");
@@ -39,7 +39,7 @@
             const n = d.data();
             const date = n.createdAt?.toDate ? n.createdAt.toDate().toLocaleDateString("ko-KR") : "";
             return `
-              <div class="notice-item">
+              <div class="notice-item" data-reveal>
                 <h3>${n.title || "(제목 없음)"}</h3>
                 <time>${date}</time>
                 <p>${n.body || ""}</p>
@@ -47,6 +47,7 @@
             `;
           })
           .join("");
+        initScrollReveal();
       } catch (e) {
         listEl.innerHTML = `<p class="muted">공지사항을 불러오지 못했습니다.</p>`;
         console.error(e);
