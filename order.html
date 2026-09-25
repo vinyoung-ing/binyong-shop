@@ -11,28 +11,13 @@
 
   <main class="page-container order-section">
     <h1>빠른주문</h1>
-    <p class="muted">담은 항목과 연락처를 확인한 뒤 주문을 제출해주세요. 결제는 카카오톡 상담을 통해 개별 안내됩니다.</p>
+    <p class="muted">담은 항목을 확인한 뒤 주문하기를 누르면, 목록이 복사되고 카카오톡 채널이 열립니다. 채팅창에 붙여넣기(Ctrl+V)만 해주세요.</p>
 
     <div class="order-cart-list" id="order-cart-list"></div>
 
-    <form class="order-form" id="order-form">
-      <label for="nickname">게임 닉네임 / 캐릭터명</label>
-      <input type="text" id="nickname" name="nickname" placeholder="예: 비뇽러버" />
-
-      <label for="serverName">서버 (해당 시)</label>
-      <input type="text" id="serverName" name="serverName" placeholder="예: 일반 서버명" />
-
-      <label for="contact">연락 가능한 채널 <span style="color:#c0392b;">*</span></label>
-      <input type="text" id="contact" name="contact" placeholder="카카오톡 ID 또는 디스코드 ID" required />
-      <div class="form-hint">카카오톡 ID, 디스코드 ID 중 하나 이상 꼭 입력해주세요.</div>
-
-      <label for="note">요청사항</label>
-      <textarea id="note" name="note" placeholder="추가로 전달하고 싶은 내용을 적어주세요."></textarea>
-
-      <div class="order-actions">
-        <button type="submit" class="btn-primary" id="submit-btn">주문 접수하고 카카오톡으로 문의하기</button>
-      </div>
-    </form>
+    <div class="order-actions">
+      <button type="button" class="btn-primary" id="submit-btn">카카오톡으로 주문하기</button>
+    </div>
 
     <div id="result-box"></div>
   </main>

@@ -16,7 +16,6 @@ renderFooter();
 renderFloatingKakao();
 
 const cartListEl = document.getElementById("order-cart-list");
-const formEl = document.getElementById("order-form");
 const resultEl = document.getElementById("result-box");
 const submitBtn = document.getElementById("submit-btn");
 
@@ -77,13 +76,10 @@ function renderCartList() {
   });
 }
 
-function buildOrderText({ orderNo, nickname, serverName, contact, note, cart, total }) {
+function buildOrderText({ orderNo, cart, total }) {
   const lines = [];
   lines.push(`[${siteConfig.siteName} 주문서]`);
-  lines.push(`주문번호: ${orderNo}`);
-  if (nickname) lines.push(`닉네임: ${nickname}`);
-  if (serverName) lines.push(`서버: ${serverName}`);
-  lines.push(`연락처: ${contact}`);
+  if (orderNo) lines.push(`주문번호: ${orderNo}`);
   lines.push("");
   lines.push("[주문 항목]");
   cart.forEach((c) => {
@@ -92,10 +88,6 @@ function buildOrderText({ orderNo, nickname, serverName, contact, note, cart, to
     );
   });
   lines.push(`예상 합계: ${formatPrice(total)}`);
-  if (note) {
-    lines.push("");
-    lines.push(`[요청사항]\n${note}`);
-  }
   return lines.join("\n");
 }
 
@@ -108,70 +100,52 @@ async function copyToClipboard(text) {
   }
 }
 
-formEl.addEventListener("submit", async (e) => {
-  e.preventDefault();
+submitBtn.addEventListener("click", async () => {
   const cart = getCart();
   if (cart.length === 0) return;
 
-  const nickname = formEl.nickname.value.trim();
-  const serverName = formEl.serverName.value.trim();
-  const contact = formEl.contact.value.trim();
-  const note = formEl.note.value.trim();
-
-  if (!contact) {
-    formEl.contact.focus();
-    return;
-  }
-
   submitBtn.disabled = true;
-  submitBtn.textContent = "접수 중...";
+  submitBtn.textContent = "처리 중...";
 
   const total = cart.reduce((sum, c) => sum + c.unitPrice * c.qty, 0);
 
+  let orderNo = "";
   try {
     const docRef = await addDoc(collection(db, "orders"), {
       items: cart,
-      nickname,
-      serverName,
-      contact,
-      note,
       total,
       status: "신규",
       createdAt: serverTimestamp(),
     });
-
-    const orderNo = docRef.id.slice(-6).toUpperCase();
-    const orderText = buildOrderText({ orderNo, nickname, serverName, contact, note, cart, total });
-
-    const copied = await copyToClipboard(orderText);
-
-    resultEl.className = "result-box";
-    resultEl.innerHTML = `
-      <p><strong>주문이 접수되었습니다! (주문번호: ${orderNo})</strong></p>
-      <p>${copied ? "주문 내용이 클립보드에 복사되었습니다." : "아래 내용을 직접 복사해주세요."} 카카오톡 채팅창에 붙여넣기(Ctrl+V) 하시면 상담이 빨라집니다.</p>
-      <div class="order-summary-box">${orderText}</div>
-      <div class="order-actions">
-        <button type="button" class="btn-secondary" id="copy-again-btn">다시 복사하기</button>
-        <a href="${siteConfig.kakaoChannelUrl}" target="_blank" rel="noopener" class="btn-primary">카카오톡 상담 열기</a>
-      </div>
-    `;
-
-    document.getElementById("copy-again-btn").addEventListener("click", async () => {
-      await copyToClipboard(orderText);
-    });
-
-    clearCart();
-    cartListEl.innerHTML = "";
-    formEl.hidden = true;
-
-    window.open(siteConfig.kakaoChannelUrl, "_blank", "noopener");
+    orderNo = docRef.id.slice(-6).toUpperCase();
   } catch (err) {
     console.error(err);
-    resultEl.className = "result-box error";
-    resultEl.innerHTML = `<p>주문 접수 중 오류가 발생했습니다. Firebase 설정을 확인하거나 잠시 후 다시 시도해주세요.</p>`;
-    submitBtn.disabled = false;
-    submitBtn.textContent = "주문 접수하고 카카오톡으로 문의하기";
+    // 주문 저장에 실패해도 카카오톡 문의 자체는 계속 진행합니다.
   }
+
+  const orderText = buildOrderText({ orderNo, cart, total });
+  const copied = await copyToClipboard(orderText);
+
+  resultEl.className = "result-box";
+  resultEl.innerHTML = `
+    <p><strong>${copied ? "주문 내용이 클립보드에 복사되었습니다!" : "아래 내용을 직접 복사해주세요."}</strong></p>
+    <p>카카오톡 채팅창에 붙여넣기(Ctrl+V) 하시면 상담이 빨라집니다.</p>
+    <div class="order-summary-box">${orderText}</div>
+    <div class="order-actions">
+      <button type="button" class="btn-secondary" id="copy-again-btn">다시 복사하기</button>
+      <a href="${siteConfig.kakaoChannelUrl}" target="_blank" rel="noopener" class="btn-primary">카카오톡 상담 열기</a>
+    </div>
+  `;
+
+  document.getElementById("copy-again-btn").addEventListener("click", async () => {
+    await copyToClipboard(orderText);
+  });
+
+  clearCart();
+  cartListEl.innerHTML = "";
+  submitBtn.hidden = true;
+
+  window.open(siteConfig.kakaoChannelUrl, "_blank", "noopener");
 });
 
 renderCartList();

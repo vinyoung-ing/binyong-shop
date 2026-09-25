@@ -42,12 +42,8 @@ function render(orders) {
           <table class="admin-table">
             <tbody>
               <tr><th>접수일시</th><td>${formatDate(o.createdAt)}</td></tr>
-              <tr><th>닉네임</th><td>${escapeHtml(o.nickname || "-")}</td></tr>
-              <tr><th>서버</th><td>${escapeHtml(o.serverName || "-")}</td></tr>
-              <tr><th>연락처</th><td>${escapeHtml(o.contact || "-")}</td></tr>
               <tr><th>항목</th><td>${itemsText || "-"}</td></tr>
               <tr><th>합계</th><td>${o.total ?? "-"}</td></tr>
-              <tr><th>요청사항</th><td>${escapeHtml(o.note || "-")}</td></tr>
               <tr>
                 <th>메모</th>
                 <td>
