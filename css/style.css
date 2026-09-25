@@ -252,24 +252,40 @@ body.storefront .logo-kr {
   border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
-body.storefront .hero::before {
+body.storefront .hero::before,
+body.storefront .hero::after {
   content: "";
   position: absolute;
   inset: -20%;
+  pointer-events: none;
+}
+body.storefront .hero::before {
   background:
     radial-gradient(620px 380px at 12% -10%, rgba(255, 206, 216, 0.55), transparent 60%),
     radial-gradient(560px 360px at 88% 0%, rgba(228, 138, 160, 0.32), transparent 60%),
     radial-gradient(520px 320px at 50% 115%, rgba(255, 226, 233, 0.4), transparent 60%);
   filter: blur(8px);
-  pointer-events: none;
-  animation: blobDrift 16s ease-in-out infinite;
+  animation: blobDriftA 16s ease-in-out infinite;
 }
-@keyframes blobDrift {
+body.storefront .hero::after {
+  background:
+    radial-gradient(420px 300px at 78% -6%, rgba(255, 226, 233, 0.5), transparent 62%),
+    radial-gradient(380px 260px at 6% 30%, rgba(228, 138, 160, 0.22), transparent 62%);
+  filter: blur(10px);
+  animation: blobDriftB 22s ease-in-out infinite;
+  mix-blend-mode: multiply;
+}
+@keyframes blobDriftA {
   0%, 100% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(-2%, 3%) scale(1.05); }
 }
+@keyframes blobDriftB {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(3%, -2%) rotate(4deg); }
+}
 @media (prefers-reduced-motion: reduce) {
-  body.storefront .hero::before { animation: none; }
+  body.storefront .hero::before,
+  body.storefront .hero::after { animation: none; }
 }
 .hero > * { position: relative; }
 .hero h1 {
@@ -285,9 +301,35 @@ body.storefront .hero::before {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-body.storefront .hero h1 { animation: fadeUpIn 0.7s ease both; }
-body.storefront .hero p { animation: fadeUpIn 0.7s ease 0.1s both; }
-body.storefront .hero .btn-primary { animation: fadeUpIn 0.7s ease 0.2s both; }
+body.storefront .hero p { animation: fadeUpIn 0.7s ease 0.45s both; }
+body.storefront .hero .btn-primary { animation: fadeUpIn 0.7s ease 0.6s both; }
+
+/* 히어로 제목: 단어 단위로 아래에서 올라오며 등장 (스플릿 텍스트) */
+.split-text .split-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.split-text .split-word > span {
+  display: inline-block;
+  transform: translateY(115%);
+  transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+  transition-delay: calc(var(--split-i, 0) * 70ms);
+}
+.split-text.is-in .split-word > span { transform: translateY(0); }
+
+/* 마우스를 따라 살짝 당겨지는 마그네틱 버튼 */
+.magnetic { transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1); }
+
+/* 마우스 위치에 따라 기울어지는 3D 틸트 카드 */
+.tilt-card { transition: transform 0.3s ease, box-shadow 0.3s ease; transform-style: preserve-3d; }
+
+@media (prefers-reduced-motion: reduce) {
+  .split-text .split-word > span { transition: none; transform: translateY(0); }
+  .magnetic, .tilt-card { transition: none; }
+}
 
 /* 스크롤하면 나타나는 요소들 (motion) */
 [data-reveal] {

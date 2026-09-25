@@ -13,9 +13,9 @@
     <div id="banner-carousel" class="banner-carousel" hidden></div>
 
     <section class="hero">
-      <h1>게임은 즐기고, 대리는 비뇽에게.</h1>
+      <h1 id="hero-title">게임은 즐기고, 대리는 비뇽에게.</h1>
       <p>카테고리별 가격표를 보고 원하는 항목을 담아, 빠른주문으로 바로 신청하세요.</p>
-      <a href="services.html" class="btn-primary">서비스 보러가기</a>
+      <a href="services.html" class="btn-primary" id="hero-cta">서비스 보러가기</a>
     </section>
 
     <section class="page-container">
@@ -32,10 +32,14 @@
     import { renderHeader, renderFooter, initScrollReveal } from "./js/common.js";
     import { listCategories } from "./js/catalog.js";
     import { renderBannerCarousel } from "./js/banner-carousel.js";
+    import { splitTextReveal, initMagnetic, initTiltAll } from "./js/motion.js";
 
     renderHeader("home");
     renderFooter();
     renderBannerCarousel();
+
+    splitTextReveal(document.getElementById("hero-title"));
+    initMagnetic(document.getElementById("hero-cta"));
 
     async function renderCategories() {
       const grid = document.getElementById("category-grid");
@@ -65,6 +69,7 @@
           })
           .join("");
         initScrollReveal();
+        initTiltAll(grid, ".category-card:not(.disabled)");
       } catch (e) {
         grid.innerHTML = `<p class="muted">카테고리를 불러오지 못했습니다. Firebase 설정을 확인해주세요.</p>`;
         console.error(e);
