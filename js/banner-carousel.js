@@ -44,6 +44,17 @@ export async function renderBannerCarousel(containerId = "banner-carousel") {
     }
   `;
 
+  // 배너 영역을 첫 이미지의 실제 비율에 맞춰 모바일에서도 양옆이 잘리지 않게 한다.
+  // 이상한 비율의 이미지 하나로 영역이 너무 길어지거나 납작해지지 않도록 범위를 제한한다.
+  const firstImg = el.querySelector("img");
+  const fitToImage = () => {
+    if (!firstImg.naturalWidth || !firstImg.naturalHeight) return;
+    const ratio = Math.min(4, Math.max(1.2, firstImg.naturalWidth / firstImg.naturalHeight));
+    el.style.aspectRatio = String(ratio);
+  };
+  if (firstImg.complete) fitToImage();
+  else firstImg.addEventListener("load", fitToImage, { once: true });
+
   if (banners.length <= 1) return;
 
   const slides = el.querySelectorAll(".banner-slide");
