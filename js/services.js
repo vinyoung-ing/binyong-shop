@@ -1,10 +1,8 @@
-import { renderHeader, renderFooter, renderFloatingKakao, formatPrice, addToCart, getCart, removeFromCart } from "./common.js";
+import { renderHeader, renderFooter, formatPrice, addToCart, getCart, removeFromCart } from "./common.js";
 import { listCategories, loadCategoryFull } from "./catalog.js";
-import { siteConfig } from "./site-config.js";
 
 renderHeader("services");
 renderFooter();
-renderFloatingKakao();
 
 const tabsEl = document.getElementById("category-tabs");
 const introEl = document.getElementById("category-intro");
@@ -103,42 +101,46 @@ async function renderCategory(category) {
           <h3>${g.name}</h3>
           ${g.note ? `<div class="group-note">${g.note}</div>` : ""}
         </div>
-        <table class="price-table">
-          <thead>
-            <tr>
-              <th>항목</th>
-              <th>단가</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            ${(g.items || [])
-              .map(
-                (item) => `
-                <tr>
-                  <td>
-                    ${item.name}
-                    ${item.conditionNote ? `<span class="item-condition">${item.conditionNote}</span>` : ""}
-                  </td>
-                  <td class="price-cell">${formatPrice(item.unitPrice)}${item.unitLabel ? ` / ${item.unitLabel}` : ""}</td>
-                  <td>
-                    <input type="number" min="1" value="1" class="qty-input"
-                      data-qty-for="${category.id}::${g.name}::${item.name}" />
-                    <button class="btn-add"
-                      data-add-category="${category.id}"
-                      data-add-category-name="${category.name}"
-                      data-add-group="${g.name}"
-                      data-add-item="${item.name}"
-                      data-add-price="${item.unitPrice}"
-                      data-add-unit="${item.unitLabel || ""}"
-                    >담기</button>
-                  </td>
-                </tr>
-              `
-              )
-              .join("")}
-          </tbody>
-        </table>
+        <div class="table-scroll">
+          <table class="price-table">
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>단가</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${(g.items || [])
+                .map(
+                  (item) => `
+                  <tr>
+                    <td>
+                      ${item.name}
+                      ${item.conditionNote ? `<span class="item-condition">${item.conditionNote}</span>` : ""}
+                    </td>
+                    <td class="price-cell">${formatPrice(item.unitPrice)}${item.unitLabel ? ` / ${item.unitLabel}` : ""}</td>
+                    <td>
+                      <div class="item-action-cell">
+                        <input type="number" min="1" value="1" class="qty-input"
+                          data-qty-for="${category.id}::${g.name}::${item.name}" />
+                        <button class="btn-add"
+                          data-add-category="${category.id}"
+                          data-add-category-name="${category.name}"
+                          data-add-group="${g.name}"
+                          data-add-item="${item.name}"
+                          data-add-price="${item.unitPrice}"
+                          data-add-unit="${item.unitLabel || ""}"
+                        >담기</button>
+                      </div>
+                    </td>
+                  </tr>
+                `
+                )
+                .join("")}
+            </tbody>
+          </table>
+        </div>
       </div>
     `
     )

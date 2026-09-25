@@ -29,13 +29,12 @@
   <footer id="site-footer"></footer>
 
   <script type="module">
-    import { renderHeader, renderFooter, renderFloatingKakao } from "./js/common.js";
+    import { renderHeader, renderFooter } from "./js/common.js";
     import { listCategories } from "./js/catalog.js";
     import { renderBannerCarousel } from "./js/banner-carousel.js";
 
     renderHeader("home");
     renderFooter();
-    renderFloatingKakao();
     renderBannerCarousel();
 
     async function renderCategories() {

@@ -19,12 +19,11 @@
   <footer id="site-footer"></footer>
 
   <script type="module">
-    import { renderHeader, renderFooter, renderFloatingKakao } from "./js/common.js";
+    import { renderHeader, renderFooter } from "./js/common.js";
     import { db, collection, getDocs, query, orderBy } from "./js/firebase-init.js";
 
     renderHeader("notice");
     renderFooter();
-    renderFloatingKakao();
 
     async function renderNotices() {
       const listEl = document.getElementById("notice-list");

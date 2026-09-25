@@ -57,31 +57,34 @@ function render() {
   content.innerHTML = `
     <div class="admin-card">
       <h2>1. 카테고리 (엘프 / 리부트 / 미네랄 등)</h2>
-      <table class="admin-table">
-        <thead><tr><th>이름</th><th>설명</th><th>상태</th><th>순서</th><th></th></tr></thead>
-        <tbody>
-          ${categories
-            .map(
-              (c) => `
-            <tr class="${c.id === selectedCategoryId ? "" : ""}">
-              <td><a href="#" data-select-cat="${c.id}"><strong>${escapeHtml(c.name)}</strong></a></td>
-              <td>${escapeHtml(c.description || "")}</td>
-              <td>
-                <select class="status-select" data-cat-status="${c.id}">
-                  <option value="active" ${c.status === "active" ? "selected" : ""}>운영중</option>
-                  <option value="coming_soon" ${c.status === "coming_soon" ? "selected" : ""}>오픈예정</option>
-                </select>
-              </td>
-              <td><input type="number" class="qty-input" style="width:56px;" value="${c.order ?? 0}" data-cat-order="${c.id}" /></td>
-              <td>
-                <button class="btn-sm danger" data-delete-cat="${c.id}">삭제</button>
-              </td>
-            </tr>
-          `
-            )
-            .join("") || `<tr><td colspan="5" class="muted">등록된 카테고리가 없습니다.</td></tr>`}
-        </tbody>
-      </table>
+      <p class="muted" style="margin:-6px 0 12px; font-size:13px;">이름을 눌러 아래에서 그룹을 관리하세요.</p>
+      <div class="table-scroll">
+        <table class="admin-table admin-table--wide">
+          <thead><tr><th>이름</th><th>설명</th><th>상태</th><th>순서</th><th></th></tr></thead>
+          <tbody>
+            ${categories
+              .map(
+                (c) => `
+              <tr class="${c.id === selectedCategoryId ? "row-selected" : ""}">
+                <td><a href="#" class="row-select-link" data-select-cat="${c.id}">${c.id === selectedCategoryId ? "▸ " : ""}${escapeHtml(c.name)}</a></td>
+                <td>${escapeHtml(c.description || "")}</td>
+                <td>
+                  <select class="status-select" data-cat-status="${c.id}">
+                    <option value="active" ${c.status === "active" ? "selected" : ""}>운영중</option>
+                    <option value="coming_soon" ${c.status === "coming_soon" ? "selected" : ""}>오픈예정</option>
+                  </select>
+                </td>
+                <td><input type="number" class="qty-input" style="width:56px;" value="${c.order ?? 0}" data-cat-order="${c.id}" /></td>
+                <td>
+                  <button class="btn-sm danger" data-delete-cat="${c.id}">삭제</button>
+                </td>
+              </tr>
+            `
+              )
+              .join("") || `<tr><td colspan="5" class="muted">등록된 카테고리가 없습니다.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
 
       <form class="inline-form" id="add-category-form">
         <input type="text" name="name" placeholder="카테고리 이름 (예: 엘프)" required />
@@ -99,26 +102,29 @@ function render() {
       selectedCategory
         ? `
       <div class="admin-card">
-        <h2>2. "${escapeHtml(selectedCategory.name)}"의 그룹 (챕터/섹션)</h2>
-        <table class="admin-table">
-          <thead><tr><th>그룹명</th><th>안내문</th><th>순서</th><th></th></tr></thead>
-          <tbody>
-            ${
-              groups
-                .map(
-                  (g) => `
-              <tr>
-                <td><a href="#" data-select-group="${g.id}"><strong>${escapeHtml(g.name)}</strong></a></td>
-                <td>${escapeHtml(g.note || "")}</td>
-                <td><input type="number" class="qty-input" style="width:56px;" value="${g.order ?? 0}" data-group-order="${g.id}" /></td>
-                <td><button class="btn-sm danger" data-delete-group="${g.id}">삭제</button></td>
-              </tr>
-            `
-                )
-                .join("") || `<tr><td colspan="4" class="muted">등록된 그룹이 없습니다.</td></tr>`
-            }
-          </tbody>
-        </table>
+        <h2>2. 그룹 (챕터/섹션)</h2>
+        <p class="admin-breadcrumb">선택된 카테고리: <strong>${escapeHtml(selectedCategory.name)}</strong> · 그룹 이름을 눌러 아래에서 항목을 관리하세요.</p>
+        <div class="table-scroll">
+          <table class="admin-table admin-table--wide">
+            <thead><tr><th>그룹명</th><th>안내문</th><th>순서</th><th></th></tr></thead>
+            <tbody>
+              ${
+                groups
+                  .map(
+                    (g) => `
+                <tr class="${g.id === selectedGroupId ? "row-selected" : ""}">
+                  <td><a href="#" class="row-select-link" data-select-group="${g.id}">${g.id === selectedGroupId ? "▸ " : ""}${escapeHtml(g.name)}</a></td>
+                  <td>${escapeHtml(g.note || "")}</td>
+                  <td><input type="number" class="qty-input" style="width:56px;" value="${g.order ?? 0}" data-group-order="${g.id}" /></td>
+                  <td><button class="btn-sm danger" data-delete-group="${g.id}">삭제</button></td>
+                </tr>
+              `
+                  )
+                  .join("") || `<tr><td colspan="4" class="muted">등록된 그룹이 없습니다.</td></tr>`
+              }
+            </tbody>
+          </table>
+        </div>
         <form class="inline-form" id="add-group-form">
           <input type="text" name="name" placeholder="그룹명 (예: 챕터1)" required />
           <input type="text" name="note" placeholder="공통 안내문 (선택)" style="min-width:200px;" />
@@ -134,31 +140,34 @@ function render() {
       selectedGroup
         ? `
       <div class="admin-card">
-        <h2>3. "${escapeHtml(selectedGroup.name)}"의 항목</h2>
-        <table class="admin-table">
-          <thead><tr><th>항목명</th><th>단가</th><th>단위</th><th>비고</th><th>순서</th><th></th></tr></thead>
-          <tbody>
-            ${
-              items
-                .map(
-                  (it) => `
-              <tr data-item-row="${it.id}">
-                <td><input type="text" class="qty-input" style="width:120px;" value="${escapeHtml(it.name)}" data-item-field="name" data-item-id="${it.id}" /></td>
-                <td><input type="number" step="any" class="qty-input" style="width:80px;" value="${it.unitPrice ?? 0}" data-item-field="unitPrice" data-item-id="${it.id}" /></td>
-                <td><input type="text" class="qty-input" style="width:70px;" value="${escapeHtml(it.unitLabel || "")}" data-item-field="unitLabel" data-item-id="${it.id}" /></td>
-                <td><input type="text" class="qty-input" style="width:140px;" value="${escapeHtml(it.conditionNote || "")}" data-item-field="conditionNote" data-item-id="${it.id}" /></td>
-                <td><input type="number" class="qty-input" style="width:56px;" value="${it.order ?? 0}" data-item-field="order" data-item-id="${it.id}" /></td>
-                <td>
-                  <button class="btn-sm primary" data-save-item="${it.id}">저장</button>
-                  <button class="btn-sm danger" data-delete-item="${it.id}">삭제</button>
-                </td>
-              </tr>
-            `
-                )
-                .join("") || `<tr><td colspan="6" class="muted">등록된 항목이 없습니다.</td></tr>`
-            }
-          </tbody>
-        </table>
+        <h2>3. 항목 (실제 가격 줄)</h2>
+        <p class="admin-breadcrumb">${escapeHtml(selectedCategory.name)} <strong>&rsaquo;</strong> ${escapeHtml(selectedGroup.name)}</p>
+        <div class="table-scroll">
+          <table class="admin-table admin-table--wide">
+            <thead><tr><th>항목명</th><th>단가</th><th>단위</th><th>비고</th><th>순서</th><th></th></tr></thead>
+            <tbody>
+              ${
+                items
+                  .map(
+                    (it) => `
+                <tr data-item-row="${it.id}">
+                  <td><input type="text" class="qty-input" style="width:120px;" value="${escapeHtml(it.name)}" data-item-field="name" data-item-id="${it.id}" /></td>
+                  <td><input type="number" step="any" class="qty-input" style="width:80px;" value="${it.unitPrice ?? 0}" data-item-field="unitPrice" data-item-id="${it.id}" /></td>
+                  <td><input type="text" class="qty-input" style="width:70px;" value="${escapeHtml(it.unitLabel || "")}" data-item-field="unitLabel" data-item-id="${it.id}" /></td>
+                  <td><input type="text" class="qty-input" style="width:140px;" value="${escapeHtml(it.conditionNote || "")}" data-item-field="conditionNote" data-item-id="${it.id}" /></td>
+                  <td><input type="number" class="qty-input" style="width:56px;" value="${it.order ?? 0}" data-item-field="order" data-item-id="${it.id}" /></td>
+                  <td style="white-space:nowrap;">
+                    <button class="btn-sm primary" data-save-item="${it.id}">저장</button>
+                    <button class="btn-sm danger" data-delete-item="${it.id}">삭제</button>
+                  </td>
+                </tr>
+              `
+                  )
+                  .join("") || `<tr><td colspan="6" class="muted">등록된 항목이 없습니다.</td></tr>`
+              }
+            </tbody>
+          </table>
+        </div>
         <form class="inline-form" id="add-item-form">
           <input type="text" name="name" placeholder="항목명 (예: 문평)" required />
           <input type="number" step="any" name="unitPrice" placeholder="단가" required style="width:90px;" />

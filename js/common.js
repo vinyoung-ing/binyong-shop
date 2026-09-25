@@ -85,10 +85,20 @@ export function renderHeader(activePage = "") {
 
   el.innerHTML = `
     <div class="header-inner">
-      <a class="logo" href="index.html">
-        <span class="logo-kr">${siteConfig.siteName}</span>
-        <span class="logo-en">${siteConfig.siteNameEn}</span>
-      </a>
+      <div class="header-top-row">
+        <a class="logo" href="index.html">
+          <span class="logo-kr">${siteConfig.siteName}</span>
+          <span class="logo-en">${siteConfig.siteNameEn}</span>
+        </a>
+        <div class="header-actions">
+          <a href="order.html" class="btn-cart">
+            선택항목 <span data-cart-badge hidden>0</span>
+          </a>
+          <a href="${siteConfig.kakaoChannelUrl}" target="_blank" rel="noopener" class="btn-kakao">
+            카카오톡 상담
+          </a>
+        </div>
+      </div>
       <nav class="main-nav">
         ${navItems
           .map(
@@ -97,14 +107,6 @@ export function renderHeader(activePage = "") {
           )
           .join("")}
       </nav>
-      <div class="header-actions">
-        <a href="order.html" class="btn-cart">
-          선택한 항목 <span data-cart-badge hidden>0</span>
-        </a>
-        <a href="${siteConfig.kakaoChannelUrl}" target="_blank" rel="noopener" class="btn-kakao">
-          카카오톡 상담
-        </a>
-      </div>
     </div>
   `;
 
@@ -134,17 +136,6 @@ export function renderFooter() {
       </p>
     </div>
   `;
-}
-
-// 공용 플로팅 카카오 상담 버튼(모바일 하단 고정)
-export function renderFloatingKakao() {
-  const el = document.createElement("a");
-  el.href = siteConfig.kakaoChannelUrl;
-  el.target = "_blank";
-  el.rel = "noopener";
-  el.className = "floating-kakao";
-  el.textContent = "카카오톡 상담";
-  document.body.appendChild(el);
 }
 
 export function formatPrice(num) {

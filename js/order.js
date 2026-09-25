@@ -1,7 +1,6 @@
 import {
   renderHeader,
   renderFooter,
-  renderFloatingKakao,
   formatPrice,
   getCart,
   removeFromCart,
@@ -13,7 +12,6 @@ import { siteConfig } from "./site-config.js";
 
 renderHeader("services");
 renderFooter();
-renderFloatingKakao();
 
 const cartListEl = document.getElementById("order-cart-list");
 const resultEl = document.getElementById("result-box");
@@ -35,27 +33,29 @@ function renderCartList() {
   const total = cart.reduce((sum, c) => sum + c.unitPrice * c.qty, 0);
 
   cartListEl.innerHTML = `
-    <table class="admin-table">
-      <thead>
-        <tr><th>카테고리</th><th>항목</th><th>단가</th><th>수량</th><th>소계</th><th></th></tr>
-      </thead>
-      <tbody>
-        ${cart
-          .map(
-            (c, i) => `
-          <tr>
-            <td>${c.categoryName}</td>
-            <td>${c.groupName} · ${c.itemName}</td>
-            <td>${formatPrice(c.unitPrice)}${c.unitLabel ? ` / ${c.unitLabel}` : ""}</td>
-            <td><input type="number" min="1" class="qty-input" value="${c.qty}" data-qty-index="${i}" /></td>
-            <td>${formatPrice(c.unitPrice * c.qty)}</td>
-            <td><button class="remove-btn" data-remove-index="${i}">삭제</button></td>
-          </tr>
-        `
-          )
-          .join("")}
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table class="admin-table admin-table--wide">
+        <thead>
+          <tr><th>카테고리</th><th>항목</th><th>단가</th><th>수량</th><th>소계</th><th></th></tr>
+        </thead>
+        <tbody>
+          ${cart
+            .map(
+              (c, i) => `
+            <tr>
+              <td>${c.categoryName}</td>
+              <td>${c.groupName} · ${c.itemName}</td>
+              <td>${formatPrice(c.unitPrice)}${c.unitLabel ? ` / ${c.unitLabel}` : ""}</td>
+              <td><input type="number" min="1" class="qty-input" value="${c.qty}" data-qty-index="${i}" /></td>
+              <td>${formatPrice(c.unitPrice * c.qty)}</td>
+              <td><button class="remove-btn" data-remove-index="${i}">삭제</button></td>
+            </tr>
+          `
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
     <div class="selected-total" style="margin-top:12px;">
       <span>예상 합계</span>
       <span>${formatPrice(total)}</span>
