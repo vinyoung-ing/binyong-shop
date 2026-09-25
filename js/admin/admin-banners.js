@@ -185,25 +185,21 @@ content.addEventListener("submit", async (e) => {
 
   uploadBtn.disabled = true;
   const baseOrder = state.banners.length;
-  const progress = new Array(files.length).fill(0);
+  let done = 0;
   const updateStatus = () => {
-    const avg = Math.round(progress.reduce((a, b) => a + b, 0) / files.length);
-    statusEl.textContent = `업로드 중… ${files.length}개 · ${avg}%`;
+    statusEl.textContent = `이미지 줄이는 중 · 저장 중… (${done}/${files.length})`;
   };
   updateStatus();
 
   const results = await Promise.allSettled(
     files.map((file, i) =>
-      uploadBanner(file, {
-        linkUrl,
-        order: baseOrder + i,
-        onProgress: (pct) => {
-          progress[i] = pct;
-          updateStatus();
-        },
+      uploadBanner(file, { linkUrl, order: baseOrder + i }).finally(() => {
+        done++;
+        updateStatus();
       })
     )
   );
+  statusEl.textContent = "";
 
   uploadBtn.disabled = false;
   const failed = results.filter((r) => r.status === "rejected");
@@ -253,7 +249,7 @@ content.addEventListener("click", async (e) => {
   if (btn.dataset.action === "delete") {
     if (!confirm("이 배너를 삭제할까요?")) return;
     const ok = await withBusy(btn, async () => {
-      await deleteBanner(banner.id, banner.storagePath);
+      await deleteBanner(banner.id);
       return true;
     }, { success: "배너를 삭제했어요." });
     if (!ok) return;

@@ -15,8 +15,9 @@ GitHub Pages만으로 동작하며 별도 서버가 필요 없습니다.
 5. 이 프로젝트의 [`js/firebase-config.js`](js/firebase-config.js) 파일을 열어 복사한 값으로 채워 넣습니다.
 6. Firestore Database → 규칙(Rules) 탭에 이 프로젝트의 [`firestore.rules`](firestore.rules) 내용을
    그대로 붙여넣고 **게시(Publish)** 합니다. (이걸 안 하면 누구나 카테고리를 수정할 수 있게 됩니다.)
-7. 배너 이미지를 쓰려면 왼쪽 메뉴 **Storage**에 들어가서 "시작하기"로 기본 버킷을 한 번 만들고,
-   규칙(Rules) 탭에 이 프로젝트의 [`storage.rules`](storage.rules) 내용을 붙여넣고 게시합니다.
+
+배너 이미지는 Firebase Storage(유료 요금제 필요)를 쓰지 않고, 업로드할 때 자동으로 압축해서
+Firestore 배너 문서 안에 바로 저장합니다. 그래서 무료 요금제 그대로 쓸 수 있고 추가 설정이 필요 없습니다.
 
 ## 2. 사이트 설정값 채우기
 
@@ -73,7 +74,6 @@ admin/               관리자 (로그인 필요)
 js/                  공용 로직 (Firebase 초기화, 카탈로그 CRUD, 장바구니, 배너 등)
 css/style.css         전체 스타일
 firestore.rules       Firestore 보안 규칙 (Firebase 콘솔에 붙여넣을 것)
-storage.rules         Storage 보안 규칙 (배너 이미지 업로드용, Firebase 콘솔에 붙여넣을 것)
 ```
 
 ## 홈 화면(3D) 수정하기
