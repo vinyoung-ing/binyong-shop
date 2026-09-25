@@ -10,6 +10,8 @@
   <header id="site-header"></header>
 
   <main>
+    <div id="banner-carousel" class="banner-carousel" hidden></div>
+
     <section class="hero">
       <h1>게임은 즐기고, 대리는 비뇽에게.</h1>
       <p>카테고리별 가격표를 보고 원하는 항목을 담아, 빠른주문으로 바로 신청하세요.</p>
@@ -29,10 +31,12 @@
   <script type="module">
     import { renderHeader, renderFooter, renderFloatingKakao } from "./js/common.js";
     import { listCategories } from "./js/catalog.js";
+    import { renderBannerCarousel } from "./js/banner-carousel.js";
 
     renderHeader("home");
     renderFooter();
     renderFloatingKakao();
+    renderBannerCarousel();
 
     async function renderCategories() {
       const grid = document.getElementById("category-grid");

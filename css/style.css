@@ -154,6 +154,54 @@ input, textarea, select { font: inherit; }
   }
 }
 
+/* ---------- 배너 캐러셀(홈) ---------- */
+.banner-carousel {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 6;
+  max-height: 360px;
+  overflow: hidden;
+  background: #eee;
+}
+@media (max-width: 720px) {
+  .banner-carousel { aspect-ratio: 4 / 3; max-height: 320px; }
+}
+.banner-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+.banner-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.banner-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.banner-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+.banner-dots button {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.55);
+  padding: 0;
+}
+.banner-dots button.active { background: #fff; }
+
 /* ---------- 히어로(홈) ---------- */
 .hero {
   padding: 64px 16px 48px;
@@ -519,3 +567,40 @@ input, textarea, select { font: inherit; }
 
 .muted { color: var(--muted); }
 .mt-24 { margin-top: 24px; }
+
+/* ---------- 관리자: 배너 관리 ---------- */
+.banner-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.banner-admin-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #fff;
+}
+.banner-admin-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  background: #f0f0f0;
+}
+.banner-admin-card .banner-admin-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.banner-admin-card input {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+}
+.banner-admin-actions {
+  display: flex;
+  gap: 6px;
+}

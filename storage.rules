@@ -1,0 +1,16 @@
+rules_version = '2';
+
+// Firebase 콘솔 > Storage > 규칙 탭에 이 내용을 붙여넣고 게시(Publish)하세요.
+// (Storage를 아직 한 번도 안 열어봤다면, 왼쪽 메뉴 "Storage"에 먼저 들어가서
+//  "시작하기"를 한 번 눌러 기본 버킷을 만들어야 이 규칙을 붙여넣을 수 있습니다.)
+//
+// 정책: 배너 이미지는 누구나 볼 수 있어야 하므로 읽기는 공개, 업로드/삭제는 로그인한 관리자만.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /banners/{bannerId}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

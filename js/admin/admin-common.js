@@ -16,6 +16,7 @@ export function requireAuth() {
 
 const NAV_ITEMS = [
   { key: "dashboard", href: "dashboard.html", label: "대시보드" },
+  { key: "banners", href: "banners.html", label: "배너 관리" },
   { key: "categories", href: "categories.html", label: "카테고리/가격표 관리" },
   { key: "orders", href: "orders.html", label: "주문 관리" },
   { key: "notices", href: "notices.html", label: "공지사항 관리" },
