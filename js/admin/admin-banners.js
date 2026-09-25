@@ -84,26 +84,42 @@ function attachHandlers() {
 
   uploadForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const files = uploadForm.files.files;
-    if (!files || files.length === 0) return;
+    const files = Array.from(uploadForm.files.files || []);
+    if (files.length === 0) return;
     const linkUrl = uploadForm.linkUrl.value.trim();
 
     uploadBtn.disabled = true;
-    let baseOrder = banners.length;
+    const baseOrder = banners.length;
 
-    for (let i = 0; i < files.length; i++) {
-      statusEl.textContent = `업로드 중... (${i + 1}/${files.length})`;
-      try {
-        await uploadBanner(files[i], { linkUrl, order: baseOrder + i });
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "업로드 중 오류가 발생했습니다. Storage 설정을 확인해주세요.";
-        uploadBtn.disabled = false;
-        return;
-      }
+    // 여러 장을 동시에 업로드하고(순차 대기 X), 업로드 전 이미지를 리사이즈/압축해서 속도를 높인다.
+    const progress = new Array(files.length).fill(0);
+    const updateStatus = () => {
+      const avg = Math.round(progress.reduce((a, b) => a + b, 0) / files.length);
+      statusEl.textContent = `업로드 중... (${files.length}개, 평균 ${avg}%)`;
+    };
+    updateStatus();
+
+    const results = await Promise.allSettled(
+      files.map((file, i) =>
+        uploadBanner(file, {
+          linkUrl,
+          order: baseOrder + i,
+          onProgress: (pct) => {
+            progress[i] = pct;
+            updateStatus();
+          },
+        })
+      )
+    );
+
+    const failedCount = results.filter((r) => r.status === "rejected").length;
+    if (failedCount > 0) {
+      results.forEach((r) => r.status === "rejected" && console.error(r.reason));
+      statusEl.textContent = `${files.length - failedCount}개 업로드 성공, ${failedCount}개 실패. Storage 설정을 확인해주세요.`;
+    } else {
+      statusEl.textContent = "업로드 완료!";
     }
 
-    statusEl.textContent = "업로드 완료!";
     uploadBtn.disabled = false;
     uploadForm.reset();
     await reload();

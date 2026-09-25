@@ -23,7 +23,7 @@ import {
 import {
   getStorage,
   ref,
-  uploadBytes,
+  uploadBytesResumable,
   getDownloadURL,
   deleteObject,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
@@ -53,7 +53,7 @@ export {
   signOut,
   onAuthStateChanged,
   ref,
-  uploadBytes,
+  uploadBytesResumable,
   getDownloadURL,
   deleteObject,
 };
