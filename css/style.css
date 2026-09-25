@@ -1,5 +1,10 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
 
+/* 페이지 이동 시 부드러운 크로스페이드 전환(지원하는 브라우저에서만 동작, 나머지는 그냥 무시됨) */
+@view-transition {
+  navigation: auto;
+}
+
 /* ---------- 기본 리셋 ---------- */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -304,21 +309,8 @@ body.storefront .hero::after {
 body.storefront .hero p { animation: fadeUpIn 0.7s ease 0.45s both; }
 body.storefront .hero .btn-primary { animation: fadeUpIn 0.7s ease 0.6s both; }
 
-/* 히어로 제목: 단어 단위로 아래에서 올라오며 등장 (스플릿 텍스트) */
-.split-text .split-word {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
-  padding-bottom: 0.08em;
-  margin-bottom: -0.08em;
-}
-.split-text .split-word > span {
-  display: inline-block;
-  transform: translateY(115%);
-  transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-  transition-delay: calc(var(--split-i, 0) * 70ms);
-}
-.split-text.is-in .split-word > span { transform: translateY(0); }
+/* 히어로 제목: 글자가 무작위 기호로 순환하다 정착하는 스크램블(디코딩) 효과 */
+#hero-title span { display: inline-block; font-variant-numeric: tabular-nums; }
 
 /* 마우스를 따라 살짝 당겨지는 마그네틱 버튼 */
 .magnetic { transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1); }
@@ -326,8 +318,36 @@ body.storefront .hero .btn-primary { animation: fadeUpIn 0.7s ease 0.6s both; }
 /* 마우스 위치에 따라 기울어지는 3D 틸트 카드 */
 .tilt-card { transition: transform 0.3s ease, box-shadow 0.3s ease; transform-style: preserve-3d; }
 
+/* 카드 위 커서를 원형으로 은은하게 따라다니는 스포트라이트 */
+.spotlight-hover { position: relative; }
+.spotlight-hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), var(--accent-soft), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.spotlight-hover:hover::after { opacity: 1; }
+
+/* 카드 위 은은한 닷매트릭스(점 격자) 텍스처, hover 시에만 살짝 드러남 */
+.dot-matrix-hover { position: relative; }
+.dot-matrix-hover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: radial-gradient(var(--accent-deep) 1px, transparent 1.6px);
+  background-size: 14px 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.dot-matrix-hover:hover::before { opacity: 0.16; }
+
 @media (prefers-reduced-motion: reduce) {
-  .split-text .split-word > span { transition: none; transform: translateY(0); }
   .magnetic, .tilt-card { transition: none; }
 }
 

@@ -14,35 +14,43 @@ export function canHover() {
   );
 }
 
-// 텍스트를 단어 단위 span으로 감싸고, 다음 프레임에 is-in 클래스를 붙여
-// CSS 트랜지션(아래에서 위로 올라오는 효과)이 순차적으로 재생되게 한다.
-export function splitTextReveal(el) {
-  if (!el || el.dataset.splitDone) return;
-  el.dataset.splitDone = "1";
+// 글자를 무작위 기호로 빠르게 순환시키다 원래 글자로 정착시키는 "디코딩" 효과.
+// 왼쪽부터 순서대로 정착되어 CLI가 텍스트를 해독하는 듯한 느낌을 준다.
+const SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#01";
 
-  const words = el.textContent.trim().split(/\s+/);
+export function scrambleText(el, { charDelay = 28, cycles = 10, tick = 34 } = {}) {
+  if (!el || el.dataset.scrambleDone) return;
+  el.dataset.scrambleDone = "1";
+
+  const finalText = el.textContent;
+
+  if (prefersReducedMotion()) return; // 최종 텍스트를 그대로 둔다.
+
+  const letters = finalText.split("");
   el.textContent = "";
-  el.classList.add("split-text");
-
-  words.forEach((word, i) => {
-    const outer = document.createElement("span");
-    outer.className = "split-word";
-    outer.style.setProperty("--split-i", i);
-
-    const inner = document.createElement("span");
-    inner.textContent = word;
-    outer.appendChild(inner);
-
-    el.appendChild(outer);
-    if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
+  const spans = letters.map((ch) => {
+    const span = document.createElement("span");
+    span.textContent = ch === " " ? " " : ch;
+    el.appendChild(span);
+    return span;
   });
 
-  if (prefersReducedMotion()) {
-    el.classList.add("is-in");
-    return;
-  }
+  spans.forEach((span, i) => {
+    if (letters[i] === " ") return;
+    const maxIterations = cycles + Math.floor(Math.random() * 4);
 
-  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("is-in")));
+    setTimeout(() => {
+      let iterations = 0;
+      const timer = setInterval(() => {
+        span.textContent = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+        iterations++;
+        if (iterations >= maxIterations) {
+          clearInterval(timer);
+          span.textContent = letters[i];
+        }
+      }, tick);
+    }, i * charDelay);
+  });
 }
 
 // 버튼 안에서 마우스를 움직이면 그 방향으로 살짝 끌려오는 마그네틱 효과.
@@ -83,12 +91,33 @@ export function initTilt(el, maxDeg = 7) {
   });
 }
 
-// containerSelector 안의 모든 요소에 initTilt를 일괄 적용.
-export function initTiltAll(containerOrSelector, itemSelector) {
+// 커서를 따라 은은한 빛(스포트라이트)이 원형으로 번지는 효과.
+// --mx/--my(%) 를 실시간으로 갱신하고, 실제 시각 효과는 .spotlight-hover CSS가 그린다.
+export function initSpotlight(el) {
+  if (!el || !canHover()) return;
+  el.classList.add("spotlight-hover");
+
+  el.addEventListener("mousemove", (e) => {
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${((e.clientX - rect.left) / rect.width) * 100}%`);
+    el.style.setProperty("--my", `${((e.clientY - rect.top) / rect.height) * 100}%`);
+  });
+}
+
+// 카드형 요소에 틸트 + 스포트라이트 + 닷매트릭스 텍스처를 한 번에 적용.
+export function initCardFX(el) {
+  if (!el) return;
+  el.classList.add("dot-matrix-hover");
+  initTilt(el);
+  initSpotlight(el);
+}
+
+// containerSelector 안의 모든 요소에 initCardFX를 일괄 적용.
+export function initCardFXAll(containerOrSelector, itemSelector) {
   const container =
     typeof containerOrSelector === "string"
       ? document.querySelector(containerOrSelector)
       : containerOrSelector;
   if (!container) return;
-  container.querySelectorAll(itemSelector).forEach((el) => initTilt(el));
+  container.querySelectorAll(itemSelector).forEach((el) => initCardFX(el));
 }

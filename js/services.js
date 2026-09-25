@@ -1,4 +1,5 @@
 import { renderHeader, renderFooter, formatPrice, addToCart, getCart, removeFromCart, initScrollReveal } from "./common.js";
+import { initSpotlight } from "./motion.js";
 import { listCategories, loadCategoryFull } from "./catalog.js";
 
 renderHeader("services");
@@ -169,6 +170,7 @@ async function renderCategory(category) {
   });
 
   initScrollReveal();
+  groupsEl.querySelectorAll(".price-group-header").forEach((el) => initSpotlight(el));
 }
 
 function renderSelectedPanel() {
