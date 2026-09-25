@@ -5,7 +5,6 @@ import {
   doc,
   getDoc,
   getDocs,
-  addDoc,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -28,20 +27,17 @@ export async function listBanners() {
 }
 
 export async function uploadBanner(file, { linkUrl = "", order = 0 } = {}) {
-  // 1) 문서를 먼저 만들어서 id를 받고, 2) 그 id로 스토리지 경로를 정한다.
-  const docRef = await addDoc(collection(db, "banners"), {
-    imageUrl: "",
-    storagePath: "",
-    linkUrl,
-    order,
-  });
+  // id만 먼저 로컬에서 발급받고(문서는 아직 안 씀), 그 id로 스토리지 경로를 정해 업로드한다.
+  // 업로드가 성공한 뒤에만 Firestore 문서를 한 번에 쓰기 때문에,
+  // Storage 업로드가 실패해도 이미지 없는 "깨진" 배너 문서가 남지 않는다.
+  const docRef = doc(collection(db, "banners"));
 
   const storagePath = `banners/${docRef.id}/${file.name}`;
   const fileRef = ref(storage, storagePath);
   await uploadBytes(fileRef, file);
   const imageUrl = await getDownloadURL(fileRef);
 
-  await updateDoc(docRef, { imageUrl, storagePath });
+  await setDoc(docRef, { imageUrl, storagePath, linkUrl, order });
   return docRef.id;
 }
 

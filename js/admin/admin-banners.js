@@ -51,7 +51,11 @@ function render() {
                 .map(
                   (b) => `
                 <div class="banner-admin-card" data-banner-card="${b.id}">
-                  <img src="${b.imageUrl}" alt="배너 이미지" />
+                  ${
+                    b.imageUrl
+                      ? `<img src="${b.imageUrl}" alt="배너 이미지" />`
+                      : `<div style="aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; background:#fdecea; color:#c0392b; font-size:12px; text-align:center; padding:8px;">이미지 없음<br/>(삭제 후 다시 업로드해주세요)</div>`
+                  }
                   <div class="banner-admin-body">
                     <input type="text" placeholder="링크(선택)" value="${escapeHtml(b.linkUrl || "")}" data-banner-link="${b.id}" />
                     <input type="number" placeholder="순서" value="${b.order ?? 0}" data-banner-order="${b.id}" />

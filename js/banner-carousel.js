@@ -8,6 +8,7 @@ export async function renderBannerCarousel(containerId = "banner-carousel") {
   let settings = {};
   try {
     [banners, settings] = await Promise.all([listBanners(), getSiteSettings()]);
+    banners = banners.filter((b) => b.imageUrl);
   } catch (e) {
     console.error(e);
   }
