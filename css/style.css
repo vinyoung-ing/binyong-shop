@@ -35,22 +35,23 @@ input, textarea, select { font: inherit; }
   --shadow-lift: 0 14px 30px -14px rgba(0, 0, 0, 0.18);
 }
 
-/* 고객 대상 페이지(스토어프론트)에 입히는 다크 + 그라디언트 테마.
-   관리자 화면은 <body>에 이 클래스가 없어 위 밝은 기본값을 그대로 씁니다. */
+/* 고객 대상 페이지(스토어프론트)에 입히는 밝고 모던한 테마.
+   로즈쿼츠(핑크) + 세레니티(블루) 파스텔 그라디언트를 포인트로 쓰는 화이트 베이스.
+   관리자 화면은 <body>에 이 클래스가 없어 위 기본값을 그대로 씁니다. */
 body.storefront {
-  --bg: #0a0b10;
-  --surface: #151824;
-  --surface-2: #1b1f2d;
-  --text: #f3f4f8;
-  --muted: #9aa0b6;
-  --border: #262b3c;
-  --accent: #8b5cf6;
-  --accent-2: #5b8def;
-  --accent-soft: rgba(139, 92, 246, 0.16);
-  --danger: #ff7a7a;
-  --success: #3ddc97;
-  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 10px 24px -18px rgba(0, 0, 0, 0.7);
-  --shadow-lift: 0 20px 40px -18px rgba(91, 58, 220, 0.35);
+  --bg: #fbfbfe;
+  --surface: #ffffff;
+  --surface-2: #f6f4f9;
+  --text: #23242e;
+  --muted: #767b93;
+  --border: #eceaf3;
+  --accent: #ff6f91;
+  --accent-2: #6c8cff;
+  --accent-soft: rgba(255, 111, 145, 0.1);
+  --danger: #e0555f;
+  --success: #22a06b;
+  --shadow-card: 0 1px 2px rgba(35, 36, 46, 0.04);
+  --shadow-lift: 0 22px 44px -20px rgba(108, 76, 230, 0.28);
 }
 
 .page-container {
@@ -68,7 +69,7 @@ body.storefront {
   z-index: 50;
 }
 body.storefront #site-header {
-  background: rgba(10, 11, 16, 0.82);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(10px);
 }
 .header-inner {
@@ -93,7 +94,7 @@ body.storefront #site-header {
   letter-spacing: -0.01em;
 }
 body.storefront .logo-kr {
-  background: linear-gradient(135deg, #fff 0%, #cfd3ff 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -252,10 +253,12 @@ body.storefront .logo-kr {
 body.storefront .hero::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -20%;
   background:
-    radial-gradient(560px 280px at 18% -10%, rgba(139, 92, 246, 0.35), transparent 60%),
-    radial-gradient(480px 260px at 85% 10%, rgba(91, 141, 239, 0.28), transparent 60%);
+    radial-gradient(620px 380px at 12% -10%, rgba(255, 143, 171, 0.4), transparent 60%),
+    radial-gradient(560px 360px at 88% 0%, rgba(110, 168, 254, 0.36), transparent 60%),
+    radial-gradient(520px 320px at 50% 115%, rgba(255, 200, 220, 0.28), transparent 60%);
+  filter: blur(8px);
   pointer-events: none;
 }
 .hero > * { position: relative; }
@@ -278,7 +281,7 @@ body.storefront .hero::before {
   border: none;
   transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
-body.storefront .btn-primary { box-shadow: 0 12px 26px -10px rgba(124, 92, 255, 0.6); }
+body.storefront .btn-primary { box-shadow: 0 14px 28px -12px rgba(255, 111, 145, 0.55); }
 .btn-primary:hover { transform: translateY(-1px); opacity: 0.94; }
 .btn-secondary {
   background: transparent;
@@ -358,7 +361,7 @@ body.storefront .btn-primary { box-shadow: 0 12px 26px -10px rgba(124, 92, 255, 
   border-color: transparent;
 }
 body.storefront .category-tabs button.active {
-  box-shadow: 0 10px 22px -10px rgba(124, 92, 255, 0.6);
+  box-shadow: 0 10px 22px -10px rgba(255, 111, 145, 0.55);
 }
 .category-tabs button:disabled {
   color: var(--muted);
