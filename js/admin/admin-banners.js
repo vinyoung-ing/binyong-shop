@@ -26,7 +26,7 @@ function bannerCard(b, i) {
       <div class="banner-thumb">
         ${
           b.imageUrl
-            ? `<img src="${b.imageUrl}" alt="배너 ${i + 1}" loading="lazy" />`
+            ? `<img src="${escapeHtml(b.imageUrl)}" alt="배너 ${i + 1}" loading="lazy" />`
             : `<div class="banner-missing">이미지 없음<br />(삭제 후 다시 올려주세요)</div>`
         }
         <span class="banner-order">${i + 1}</span>

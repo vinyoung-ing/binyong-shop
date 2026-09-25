@@ -74,7 +74,7 @@ function renderList() {
       const items = (o.items || [])
         .map(
           (it) =>
-            `<li><span>${escapeHtml(it.categoryName)} · ${escapeHtml(it.groupName)} · <b>${escapeHtml(it.itemName)}</b> × ${it.qty}</span><span>${formatPrice(it.unitPrice * it.qty)}</span></li>`
+            `<li><span>${escapeHtml(it.categoryName)} · ${escapeHtml(it.groupName)} · <b>${escapeHtml(it.itemName)}</b> × ${formatPrice(it.qty)}</span><span>${formatPrice(it.unitPrice * it.qty)}</span></li>`
         )
         .join("");
       return `

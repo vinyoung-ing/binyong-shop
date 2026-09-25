@@ -6,6 +6,7 @@ import {
   removeFromCart,
   updateCartQty,
   clearCart,
+  escapeHtml as esc,
 } from "./common.js";
 import { db, collection, addDoc, serverTimestamp } from "./firebase-init.js";
 import { siteConfig } from "./site-config.js";
@@ -43,10 +44,10 @@ function renderCartList() {
             .map(
               (c, i) => `
             <tr>
-              <td>${c.categoryName}</td>
-              <td>${c.groupName} · ${c.itemName}</td>
-              <td>${formatPrice(c.unitPrice)}${c.unitLabel ? ` / ${c.unitLabel}` : ""}</td>
-              <td><input type="number" min="1" class="qty-input" value="${c.qty}" data-qty-index="${i}" /></td>
+              <td>${esc(c.categoryName)}</td>
+              <td>${esc(c.groupName)} · ${esc(c.itemName)}</td>
+              <td>${formatPrice(c.unitPrice)}${c.unitLabel ? ` / ${esc(c.unitLabel)}` : ""}</td>
+              <td><input type="number" min="1" class="qty-input" value="${Number(c.qty) || 1}" data-qty-index="${i}" /></td>
               <td>${formatPrice(c.unitPrice * c.qty)}</td>
               <td><button class="remove-btn" data-remove-index="${i}">삭제</button></td>
             </tr>
@@ -130,7 +131,7 @@ submitBtn.addEventListener("click", async () => {
   resultEl.innerHTML = `
     <p><strong>${copied ? "주문 내용이 클립보드에 복사되었습니다!" : "아래 내용을 직접 복사해주세요."}</strong></p>
     <p>카카오톡 채팅창에 붙여넣기(Ctrl+V) 하시면 상담이 빨라집니다.</p>
-    <div class="order-summary-box">${orderText}</div>
+    <div class="order-summary-box">${esc(orderText)}</div>
     <div class="order-actions">
       <button type="button" class="btn-secondary" id="copy-again-btn">다시 복사하기</button>
       <a href="${siteConfig.kakaoChannelUrl}" target="_blank" rel="noopener" class="btn-primary">카카오톡 상담 열기</a>

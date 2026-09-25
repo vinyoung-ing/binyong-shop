@@ -42,7 +42,7 @@
       const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" }) : "-";
       return `
         <li>
-          <span class="chip ${(o.status || "신규") === "신규" ? "chip-on" : "chip-off"}">${o.status || "신규"}</span>
+          <span class="chip ${(o.status || "신규") === "신규" ? "chip-on" : "chip-off"}">${escapeHtml(o.status || "신규")}</span>
           <span class="recent-title">${first ? escapeHtml(first.itemName) : "-"}${more}</span>
           <span class="muted">${formatPrice(o.total)} · ${date}</span>
         </li>`;

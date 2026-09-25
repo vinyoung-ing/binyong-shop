@@ -2,18 +2,40 @@ rules_version = '2';
 
 // Firebase 콘솔 > Firestore Database > 규칙 탭에 이 내용을 붙여넣고 게시(Publish)하세요.
 //
-// 정책:
-// - categories / groups / items / notices: 누구나 읽기 가능(누구나 가격표를 볼 수 있어야 함), 쓰기는 로그인한 관리자만.
-// - orders: 누구나 새 주문을 "생성"만 가능(로그인 없이 주문서 제출), 읽기/수정/삭제는 관리자만.
-//   (고객이 자신의 주문도 조회할 수 없게 되어 있습니다. 비회원 주문 조회 기능을 나중에 추가하면 규칙도 함께 조정해야 합니다.)
+// ⚠️ 붙여넣기 전에 아래 adminEmails() 안의 이메일을 실제 관리자 계정 이메일로 바꿔주세요.
+//    (Firebase 콘솔 > Authentication > Users 에 보이는 관리자 이메일)
+//    바꾸지 않으면 관리자 화면에서 저장/삭제가 모두 "권한 없음"으로 실패합니다.
 //
-// 관리자 계정은 Firebase Authentication에서 이메일/비밀번호로 만든 단일(또는 소수) 계정을 사용합니다.
-// 이 프로젝트는 "로그인한 사용자 = 관리자"로 간주합니다. 고객용 회원가입 기능이 없으므로 안전합니다.
+// 정책:
+// - categories / groups / items / notices / banners / settings: 누구나 읽기, 쓰기는 관리자 이메일만.
+// - orders: 누구나 "사이트가 보내는 형태 그대로"의 새 주문만 생성 가능. 읽기/수정/삭제는 관리자만.
+//
+// Firebase 로그인은 기본적으로 누구나 스스로 계정을 만들 수 있으므로,
+// "로그인했다 = 관리자"로 보면 안 됩니다. 반드시 이메일로 한 번 더 확인합니다.
+// (추가로 Authentication > 설정 > 사용자 작업에서 "생성(가입) 사용 설정"을 끄는 것을 권장합니다.)
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function adminEmails() {
+      return ["여기에-관리자-이메일@example.com"];
+    }
+
     function isAdmin() {
-      return request.auth != null;
+      return request.auth != null
+        && request.auth.token.email is string
+        && request.auth.token.email.lower() in adminEmails();
+    }
+
+    // 사이트(order.js)가 만드는 주문 모양: { items, total, status: "신규", createdAt: 서버시간 }
+    function isValidNewOrder() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(["items", "total", "status", "createdAt"])
+        && d.items is list
+        && d.items.size() > 0
+        && d.items.size() <= 50
+        && d.total is number
+        && d.status == "신규"
+        && d.createdAt == request.time;
     }
 
     match /categories/{categoryId} {
@@ -47,7 +69,7 @@ service cloud.firestore {
     }
 
     match /orders/{orderId} {
-      allow create: if true;
+      allow create: if isValidNewOrder();
       allow read, update, delete: if isAdmin();
     }
   }

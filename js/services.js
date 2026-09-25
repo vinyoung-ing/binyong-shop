@@ -1,4 +1,4 @@
-import { renderHeader, renderFooter, formatPrice, addToCart, getCart, removeFromCart, initScrollReveal } from "./common.js";
+import { renderHeader, renderFooter, formatPrice, addToCart, getCart, removeFromCart, initScrollReveal, escapeHtml as esc } from "./common.js";
 import { initSpotlight } from "./motion.js";
 import { listCategories, loadCategoryFull } from "./catalog.js";
 
@@ -55,7 +55,7 @@ function renderTabs() {
         data-cat="${c.id}"
         class="${isCurrent ? "active" : ""}"
         ${isActive ? "" : "disabled title=\"오픈예정\""}
-      >${c.name}${isActive ? "" : " (오픈예정)"}</button>`;
+      >${esc(c.name)}${isActive ? "" : " (오픈예정)"}</button>`;
     })
     .join("");
 
@@ -99,8 +99,8 @@ async function renderCategory(category) {
       (g) => `
       <div class="price-group" data-reveal>
         <div class="price-group-header">
-          <h3>${g.name}</h3>
-          ${g.note ? `<div class="group-note">${g.note}</div>` : ""}
+          <h3>${esc(g.name)}</h3>
+          ${g.note ? `<div class="group-note">${esc(g.note)}</div>` : ""}
         </div>
         <div class="table-scroll">
           <table class="price-table">
@@ -117,21 +117,21 @@ async function renderCategory(category) {
                   (item) => `
                   <tr>
                     <td>
-                      ${item.name}
-                      ${item.conditionNote ? `<span class="item-condition">${item.conditionNote}</span>` : ""}
+                      ${esc(item.name)}
+                      ${item.conditionNote ? `<span class="item-condition">${esc(item.conditionNote)}</span>` : ""}
                     </td>
-                    <td class="price-cell">${formatPrice(item.unitPrice)}${item.unitLabel ? ` / ${item.unitLabel}` : ""}</td>
+                    <td class="price-cell">${formatPrice(item.unitPrice)}${item.unitLabel ? ` / ${esc(item.unitLabel)}` : ""}</td>
                     <td>
                       <div class="item-action-cell">
                         <input type="number" min="1" value="1" class="qty-input"
-                          data-qty-for="${category.id}::${g.name}::${item.name}" />
+                          data-qty-for="${esc(`${category.id}::${g.name}::${item.name}`)}" />
                         <button class="btn-add"
-                          data-add-category="${category.id}"
-                          data-add-category-name="${category.name}"
-                          data-add-group="${g.name}"
-                          data-add-item="${item.name}"
-                          data-add-price="${item.unitPrice}"
-                          data-add-unit="${item.unitLabel || ""}"
+                          data-add-category="${esc(category.id)}"
+                          data-add-category-name="${esc(category.name)}"
+                          data-add-group="${esc(g.name)}"
+                          data-add-item="${esc(item.name)}"
+                          data-add-price="${Number(item.unitPrice) || 0}"
+                          data-add-unit="${esc(item.unitLabel || "")}"
                         >담기</button>
                       </div>
                     </td>
@@ -189,7 +189,7 @@ function renderSelectedPanel() {
     .map(
       (c, i) => `
       <div class="selected-item">
-        <span>${c.itemName} × ${c.qty}</span>
+        <span>${esc(c.itemName)} × ${formatPrice(c.qty)}</span>
         <button class="remove-btn" data-remove="${i}">삭제</button>
       </div>
     `

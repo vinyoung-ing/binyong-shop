@@ -1,4 +1,5 @@
 import { listBanners, getSiteSettings } from "./banners.js";
+import { escapeHtml, safeImageUrl, safeLinkUrl } from "./common.js";
 
 export async function renderBannerCarousel(containerId = "banner-carousel") {
   const el = document.getElementById(containerId);
@@ -8,7 +9,9 @@ export async function renderBannerCarousel(containerId = "banner-carousel") {
   let settings = {};
   try {
     [banners, settings] = await Promise.all([listBanners(), getSiteSettings()]);
-    banners = banners.filter((b) => b.imageUrl);
+    banners = banners
+      .map((b) => ({ ...b, imageUrl: safeImageUrl(b.imageUrl), linkUrl: safeLinkUrl(b.linkUrl) }))
+      .filter((b) => b.imageUrl);
   } catch (e) {
     console.error(e);
   }
@@ -28,8 +31,8 @@ export async function renderBannerCarousel(containerId = "banner-carousel") {
       <div class="banner-slide ${i === 0 ? "active" : ""}" data-slide-index="${i}">
         ${
           b.linkUrl
-            ? `<a href="${b.linkUrl}" target="_blank" rel="noopener"><img src="${b.imageUrl}" alt="배너" /></a>`
-            : `<img src="${b.imageUrl}" alt="배너" />`
+            ? `<a href="${escapeHtml(b.linkUrl)}" target="_blank" rel="noopener"><img src="${escapeHtml(b.imageUrl)}" alt="배너" /></a>`
+            : `<img src="${escapeHtml(b.imageUrl)}" alt="배너" />`
         }
       </div>
     `

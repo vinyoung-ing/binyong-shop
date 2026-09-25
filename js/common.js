@@ -167,6 +167,16 @@ export function heroTitleError(text) {
   return null;
 }
 
+// href/src 에 넣을 주소를 허용된 형식만 통과시킨다(javascript: 같은 주소 차단).
+export function safeLinkUrl(url) {
+  const u = String(url ?? "").trim();
+  return /^https?:\/\//i.test(u) ? u : "";
+}
+export function safeImageUrl(url) {
+  const u = String(url ?? "").trim();
+  return /^(https:\/\/|data:image\/(jpeg|png|webp|gif);base64,)/i.test(u) ? u : "";
+}
+
 export function escapeHtml(str) {
   if (str == null) return "";
   return String(str)
