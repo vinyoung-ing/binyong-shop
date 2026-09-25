@@ -11,5 +11,5 @@ export const firebaseConfig = {
   projectId: "binyong-shop",
   storageBucket: "binyong-shop.firebasestorage.app",
   messagingSenderId: "202298025655",
-  appId: "1:202298025655:web:db62676f1d8d6666c30f32",
+  appId: "1:202298025655:web:52b85877cae1d22bc30f32",
 };
