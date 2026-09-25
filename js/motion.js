@@ -26,18 +26,29 @@ export function scrambleText(el, { charDelay = 28, cycles = 10, tick = 34 } = {}
 
   if (prefersReducedMotion()) return; // 최종 텍스트를 그대로 둔다.
 
-  const letters = finalText.split("");
+  // 단어 단위로 묶어야(white-space: nowrap) 긴 제목이 단어 중간에서 줄바꿈되지 않는다.
+  const words = finalText.trim().split(/\s+/);
   el.textContent = "";
-  const spans = letters.map((ch) => {
-    const span = document.createElement("span");
-    span.textContent = ch === " " ? " " : ch;
-    el.appendChild(span);
-    return span;
+  const charSpans = [];
+
+  words.forEach((word, wi) => {
+    const wordEl = document.createElement("span");
+    wordEl.className = "sc-word";
+    for (const ch of word) {
+      const span = document.createElement("span");
+      span.className = "sc-char";
+      span.textContent = ch;
+      span.dataset.final = ch;
+      wordEl.appendChild(span);
+      charSpans.push(span);
+    }
+    el.appendChild(wordEl);
+    if (wi < words.length - 1) el.appendChild(document.createTextNode(" "));
   });
 
-  spans.forEach((span, i) => {
-    if (letters[i] === " ") return;
+  charSpans.forEach((span, i) => {
     const maxIterations = cycles + Math.floor(Math.random() * 4);
+    span.textContent = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
 
     setTimeout(() => {
       let iterations = 0;
@@ -46,7 +57,7 @@ export function scrambleText(el, { charDelay = 28, cycles = 10, tick = 34 } = {}
         iterations++;
         if (iterations >= maxIterations) {
           clearInterval(timer);
-          span.textContent = letters[i];
+          span.textContent = span.dataset.final;
         }
       }, tick);
     }, i * charDelay);

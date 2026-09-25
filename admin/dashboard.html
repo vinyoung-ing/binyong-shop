@@ -10,61 +10,84 @@
   <div id="admin-root"></div>
 
   <script type="module">
-    import { requireAuth, renderAdminShell } from "../js/admin/admin-common.js";
-    import { db, collection, getDocs } from "../js/firebase-init.js";
+    import { requireAuth, renderAdminShell, escapeHtml } from "../js/admin/admin-common.js";
+    import { formatPrice } from "../js/common.js";
+    import { db, collection, getDocs, query, orderBy } from "../js/firebase-init.js";
     import { listCategories } from "../js/catalog.js";
 
     await requireAuth();
-    const content = renderAdminShell("dashboard", "대시보드");
-
+    const content = renderAdminShell("dashboard", "대시보드", "오늘 확인할 주문과 사이트 상태를 한눈에 봐요.");
     content.innerHTML = `<p class="muted">불러오는 중...</p>`;
 
-    const [categories, ordersSnap] = await Promise.all([
+    const [categories, orders] = await Promise.all([
       listCategories().catch(() => []),
-      getDocs(collection(db, "orders")).catch(() => ({ docs: [] })),
+      getDocs(query(collection(db, "orders"), orderBy("createdAt", "desc")))
+        .then((snap) => snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+        .catch(() => []),
     ]);
 
-    const orders = ordersSnap.docs.map((d) => d.data());
-    const statusCounts = orders.reduce((acc, o) => {
-      const s = o.status || "신규";
-      acc[s] = (acc[s] || 0) + 1;
-      return acc;
-    }, {});
+    const today = new Date().toDateString();
+    const count = (status) => orders.filter((o) => (o.status || "신규") === status).length;
+    const todayCount = orders.filter((o) => o.createdAt?.toDate && o.createdAt.toDate().toDateString() === today).length;
+
+    const stat = (label, value, href, accent = false) => `
+      <a class="stat-card ${accent ? "is-accent" : ""}" href="${href}">
+        <span>${label}</span>
+        <b>${value}</b>
+      </a>`;
+
+    const recent = orders.slice(0, 5).map((o) => {
+      const first = o.items?.[0];
+      const more = (o.items?.length || 0) > 1 ? ` 외 ${o.items.length - 1}건` : "";
+      const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" }) : "-";
+      return `
+        <li>
+          <span class="chip ${(o.status || "신규") === "신규" ? "chip-on" : "chip-off"}">${o.status || "신규"}</span>
+          <span class="recent-title">${first ? escapeHtml(first.itemName) : "-"}${more}</span>
+          <span class="muted">${formatPrice(o.total)} · ${date}</span>
+        </li>`;
+    }).join("");
 
     content.innerHTML = `
-      <div class="admin-card">
-        <h2>주문 현황</h2>
-        <p>전체 주문: <strong>${orders.length}</strong>건</p>
-        <table class="admin-table">
-          <thead><tr><th>상태</th><th>건수</th></tr></thead>
-          <tbody>
-            ${["신규", "확인중", "진행중", "완료", "취소"]
-              .map((s) => `<tr><td>${s}</td><td>${statusCounts[s] || 0}</td></tr>`)
-              .join("")}
-          </tbody>
-        </table>
-        <p class="mt-24"><a href="orders.html">주문 관리로 이동 →</a></p>
+      <div class="stat-grid">
+        ${stat("새로 들어온 주문", count("신규"), "orders.html?status=신규", true)}
+        ${stat("오늘 접수", todayCount, "orders.html")}
+        ${stat("진행중", count("확인중") + count("진행중"), "orders.html?status=진행중")}
+        ${stat("완료", count("완료"), "orders.html?status=완료")}
       </div>
 
-      <div class="admin-card">
-        <h2>카테고리 현황</h2>
-        <table class="admin-table">
-          <thead><tr><th>카테고리</th><th>상태</th></tr></thead>
-          <tbody>
-            ${
-              categories.length
-                ? categories
-                    .map(
-                      (c) =>
-                        `<tr><td>${c.name}</td><td>${c.status === "active" ? "운영중" : "오픈예정"}</td></tr>`
-                    )
-                    .join("")
-                : `<tr><td colspan="2" class="muted">등록된 카테고리가 없습니다.</td></tr>`
-            }
-          </tbody>
-        </table>
-        <p class="mt-24"><a href="categories.html">카테고리 관리로 이동 →</a></p>
+      <div class="dash-grid">
+        <section class="admin-card">
+          <div class="col-head"><h2>최근 주문</h2><a class="link-sm" href="orders.html">전체 보기 →</a></div>
+          ${recent ? `<ul class="recent-list">${recent}</ul>` : `<p class="empty-state">아직 접수된 주문이 없어요.</p>`}
+        </section>
+
+        <section class="admin-card">
+          <div class="col-head"><h2>카테고리</h2><a class="link-sm" href="categories.html">가격표 관리 →</a></div>
+          ${
+            categories.length
+              ? `<ul class="recent-list">${categories
+                  .map(
+                    (c) => `<li>
+                      <span class="chip ${c.status === "active" ? "chip-on" : "chip-off"}">${c.status === "active" ? "운영중" : "오픈예정"}</span>
+                      <span class="recent-title">${escapeHtml(c.name)}</span>
+                    </li>`
+                  )
+                  .join("")}</ul>`
+              : `<p class="empty-state">카테고리가 없어요. 가격표 관리에서 추가하세요.</p>`
+          }
+        </section>
       </div>
+
+      <section class="admin-card">
+        <div class="col-head"><h2>빠른 작업</h2></div>
+        <div class="quick-actions">
+          <a class="btn-sm primary" href="categories.html">가격표 수정하기</a>
+          <a class="btn-sm" href="banners.html">배너 올리기</a>
+          <a class="btn-sm" href="notices.html">공지 쓰기</a>
+          <a class="btn-sm" href="../index.html" target="_blank" rel="noopener">사이트 열기 ↗</a>
+        </div>
+      </section>
     `;
   </script>
 </body>

@@ -119,23 +119,40 @@ export function renderFooter() {
 
   el.innerHTML = `
     <div class="footer-inner">
-      <p class="footer-brand">${siteConfig.siteName} · ${siteConfig.siteNameEn}</p>
-      <nav class="footer-nav">
-        <a href="index.html">홈</a>
-        <a href="services.html">서비스</a>
-        <a href="notice.html">공지사항</a>
-        <a href="guide.html">이용안내</a>
-      </nav>
-      <p class="footer-contact">
-        문의: <a href="${siteConfig.kakaoChannelUrl}" target="_blank" rel="noopener">카카오톡 채널</a>
-        ${siteConfig.discordUrl ? ` · <a href="${siteConfig.discordUrl}" target="_blank" rel="noopener">디스코드</a>` : ""}
-      </p>
-      <p class="footer-note">
-        본 사이트는 게임 대리 서비스 주문을 접수·관리하는 커머스 사이트입니다.
-        온라인 결제를 지원하지 않으며, 결제는 상담 채널을 통해 개별 안내됩니다.
-      </p>
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand">${siteConfig.siteName} · ${siteConfig.siteNameEn}</p>
+          <p class="footer-tagline">${siteConfig.tagline}</p>
+        </div>
+        <nav class="footer-nav">
+          <a href="index.html">홈</a>
+          <a href="services.html">서비스</a>
+          <a href="notice.html">공지사항</a>
+          <a href="guide.html">이용안내</a>
+        </nav>
+      </div>
+      <p class="footer-wordmark" aria-hidden="true">${siteConfig.siteNameEn}</p>
+      <div class="footer-bottom">
+        <p class="footer-contact">
+          문의 <a href="${siteConfig.kakaoChannelUrl}" target="_blank" rel="noopener">카카오톡 채널</a>
+          ${siteConfig.discordUrl ? ` · <a href="${siteConfig.discordUrl}" target="_blank" rel="noopener">디스코드</a>` : ""}
+        </p>
+        <p class="footer-note">
+          본 사이트는 게임 대리 서비스 주문을 접수하는 사이트로, 온라인 결제는 지원하지 않습니다.
+          결제는 상담 채널을 통해 개별 안내됩니다.
+        </p>
+      </div>
     </div>
   `;
+}
+
+export function escapeHtml(str) {
+  if (str == null) return "";
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 export function formatPrice(num) {

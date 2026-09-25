@@ -3,20 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffced8" />
   <title>빠른주문 · 비뇽</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="storefront">
   <header id="site-header"></header>
 
+  <section class="page-hero blob-bg">
+    <div class="page-hero-inner">
+      <p class="eyebrow">QUICK ORDER</p>
+      <h1>빠른주문</h1>
+      <p>담은 항목을 확인하고 주문하기를 누르면, 목록이 복사되고 카카오톡 채널이 열립니다. 채팅창에 붙여넣기(Ctrl+V)만 해주세요.</p>
+    </div>
+  </section>
+
   <main class="page-container order-section">
-    <h1>빠른주문</h1>
-    <p class="muted">담은 항목을 확인한 뒤 주문하기를 누르면, 목록이 복사되고 카카오톡 채널이 열립니다. 채팅창에 붙여넣기(Ctrl+V)만 해주세요.</p>
+    <div class="surface-card">
+      <div class="order-cart-list" id="order-cart-list"></div>
 
-    <div class="order-cart-list" id="order-cart-list"></div>
-
-    <div class="order-actions">
-      <button type="button" class="btn-primary" id="submit-btn">카카오톡으로 주문하기</button>
+      <div class="order-actions">
+        <button type="button" class="btn-primary" id="submit-btn">카카오톡으로 주문하기</button>
+        <a href="services.html" class="btn-secondary">항목 더 담기</a>
+      </div>
     </div>
 
     <div id="result-box"></div>

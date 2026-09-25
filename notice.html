@@ -3,15 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffced8" />
   <title>공지사항 · 비뇽</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="storefront">
   <header id="site-header"></header>
 
+  <section class="page-hero blob-bg">
+    <div class="page-hero-inner">
+      <p class="eyebrow">NOTICE</p>
+      <h1>공지사항</h1>
+      <p>작업 일정, 가격 변경, 이벤트 소식을 알려드려요.</p>
+    </div>
+  </section>
+
   <main class="page-container static-content">
-    <h1>공지사항</h1>
-    <div id="notice-list">
+    <div id="notice-list" class="notice-list">
       <p class="muted">불러오는 중...</p>
     </div>
   </main>
@@ -19,11 +27,13 @@
   <footer id="site-footer"></footer>
 
   <script type="module">
-    import { renderHeader, renderFooter, initScrollReveal } from "./js/common.js";
+    import { renderHeader, renderFooter, initScrollReveal, escapeHtml } from "./js/common.js";
     import { db, collection, getDocs, query, orderBy } from "./js/firebase-init.js";
 
     renderHeader("notice");
     renderFooter();
+
+    const NEW_DAYS = 7;
 
     async function renderNotices() {
       const listEl = document.getElementById("notice-list");
@@ -34,16 +44,29 @@
           listEl.innerHTML = `<p class="muted">등록된 공지사항이 없습니다.</p>`;
           return;
         }
-        listEl.innerHTML = snap.docs
-          .map((d) => {
-            const n = d.data();
-            const date = n.createdAt?.toDate ? n.createdAt.toDate().toLocaleDateString("ko-KR") : "";
+
+        // 고정 공지를 맨 위로 (정렬은 클라이언트에서 해서 별도 색인이 필요 없게 함)
+        const notices = snap.docs
+          .map((d) => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => Number(!!b.pinned) - Number(!!a.pinned));
+
+        listEl.innerHTML = notices
+          .map((n, i) => {
+            const created = n.createdAt?.toDate ? n.createdAt.toDate() : null;
+            const date = created ? created.toLocaleDateString("ko-KR") : "";
+            const isNew = created && Date.now() - created.getTime() < NEW_DAYS * 86400000;
             return `
-              <div class="notice-item" data-reveal>
-                <h3>${n.title || "(제목 없음)"}</h3>
-                <time>${date}</time>
-                <p>${n.body || ""}</p>
-              </div>
+              <details class="notice-item" data-reveal ${i === 0 ? "open" : ""}>
+                <summary>
+                  <span class="notice-title">
+                    ${n.pinned ? `<span class="badge pinned">고정</span>` : ""}
+                    ${isNew ? `<span class="badge new">NEW</span>` : ""}
+                    ${escapeHtml(n.title || "(제목 없음)")}
+                  </span>
+                  <time>${date}</time>
+                </summary>
+                <p>${escapeHtml(n.body || "")}</p>
+              </details>
             `;
           })
           .join("");
