@@ -36,6 +36,10 @@ export default defineConfig({
         const abs = id.startsWith(".") && importer ? path.resolve(path.dirname(importer), id) : id;
         return path.normalize(abs).startsWith(sharedJs);
       },
+      output: {
+        entryFileNames: "assets/[name].[hash].js",
+        chunkFileNames: "assets/[name].[hash].js",
+      },
     },
   },
 });
