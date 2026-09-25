@@ -115,7 +115,9 @@ function attachHandlers() {
     const failedCount = results.filter((r) => r.status === "rejected").length;
     if (failedCount > 0) {
       results.forEach((r) => r.status === "rejected" && console.error(r.reason));
-      statusEl.textContent = `${files.length - failedCount}개 업로드 성공, ${failedCount}개 실패. Storage 설정을 확인해주세요.`;
+      const firstReason = results.find((r) => r.status === "rejected")?.reason;
+      const detail = firstReason?.code || firstReason?.message || String(firstReason || "");
+      statusEl.innerHTML = `${files.length - failedCount}개 업로드 성공, ${failedCount}개 실패.<br/><span style="font-family:ui-monospace,Consolas,monospace; font-size:11px;">${escapeHtml(detail)}</span>`;
     } else {
       statusEl.textContent = "업로드 완료!";
     }
