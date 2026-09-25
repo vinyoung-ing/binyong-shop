@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>공지사항 · 비뇽</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="page-container static-content">
+    <h1>공지사항</h1>
+    <div id="notice-list">
+      <p class="muted">불러오는 중...</p>
+    </div>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script type="module">
+    import { renderHeader, renderFooter, renderFloatingKakao } from "./js/common.js";
+    import { db, collection, getDocs, query, orderBy } from "./js/firebase-init.js";
+
+    renderHeader("notice");
+    renderFooter();
+    renderFloatingKakao();
+
+    async function renderNotices() {
+      const listEl = document.getElementById("notice-list");
+      try {
+        const q = query(collection(db, "notices"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          listEl.innerHTML = `<p class="muted">등록된 공지사항이 없습니다.</p>`;
+          return;
+        }
+        listEl.innerHTML = snap.docs
+          .map((d) => {
+            const n = d.data();
+            const date = n.createdAt?.toDate ? n.createdAt.toDate().toLocaleDateString("ko-KR") : "";
+            return `
+              <div class="notice-item">
+                <h3>${n.title || "(제목 없음)"}</h3>
+                <time>${date}</time>
+                <p>${n.body || ""}</p>
+              </div>
+            `;
+          })
+          .join("");
+      } catch (e) {
+        listEl.innerHTML = `<p class="muted">공지사항을 불러오지 못했습니다.</p>`;
+        console.error(e);
+      }
+    }
+
+    renderNotices();
+  </script>
+</body>
+</html>

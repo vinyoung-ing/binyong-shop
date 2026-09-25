@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>대시보드 · 비뇽 관리자</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div id="admin-root"></div>
+
+  <script type="module">
+    import { requireAuth, renderAdminShell } from "../js/admin/admin-common.js";
+    import { db, collection, getDocs } from "../js/firebase-init.js";
+    import { listCategories } from "../js/catalog.js";
+
+    await requireAuth();
+    const content = renderAdminShell("dashboard", "대시보드");
+
+    content.innerHTML = `<p class="muted">불러오는 중...</p>`;
+
+    const [categories, ordersSnap] = await Promise.all([
+      listCategories().catch(() => []),
+      getDocs(collection(db, "orders")).catch(() => ({ docs: [] })),
+    ]);
+
+    const orders = ordersSnap.docs.map((d) => d.data());
+    const statusCounts = orders.reduce((acc, o) => {
+      const s = o.status || "신규";
+      acc[s] = (acc[s] || 0) + 1;
+      return acc;
+    }, {});
+
+    content.innerHTML = `
+      <div class="admin-card">
+        <h2>주문 현황</h2>
+        <p>전체 주문: <strong>${orders.length}</strong>건</p>
+        <table class="admin-table">
+          <thead><tr><th>상태</th><th>건수</th></tr></thead>
+          <tbody>
+            ${["신규", "확인중", "진행중", "완료", "취소"]
+              .map((s) => `<tr><td>${s}</td><td>${statusCounts[s] || 0}</td></tr>`)
+              .join("")}
+          </tbody>
+        </table>
+        <p class="mt-24"><a href="orders.html">주문 관리로 이동 →</a></p>
+      </div>
+
+      <div class="admin-card">
+        <h2>카테고리 현황</h2>
+        <table class="admin-table">
+          <thead><tr><th>카테고리</th><th>상태</th></tr></thead>
+          <tbody>
+            ${
+              categories.length
+                ? categories
+                    .map(
+                      (c) =>
+                        `<tr><td>${c.name}</td><td>${c.status === "active" ? "운영중" : "오픈예정"}</td></tr>`
+                    )
+                    .join("")
+                : `<tr><td colspan="2" class="muted">등록된 카테고리가 없습니다.</td></tr>`
+            }
+          </tbody>
+        </table>
+        <p class="mt-24"><a href="categories.html">카테고리 관리로 이동 →</a></p>
+      </div>
+    `;
+  </script>
+</body>
+</html>

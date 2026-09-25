@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// Firebase 콘솔 > Firestore Database > 규칙 탭에 이 내용을 붙여넣고 게시(Publish)하세요.
+//
+// 정책:
+// - categories / groups / items / notices: 누구나 읽기 가능(누구나 가격표를 볼 수 있어야 함), 쓰기는 로그인한 관리자만.
+// - orders: 누구나 새 주문을 "생성"만 가능(로그인 없이 주문서 제출), 읽기/수정/삭제는 관리자만.
+//   (고객이 자신의 주문도 조회할 수 없게 되어 있습니다. 비회원 주문 조회 기능을 나중에 추가하면 규칙도 함께 조정해야 합니다.)
+//
+// 관리자 계정은 Firebase Authentication에서 이메일/비밀번호로 만든 단일(또는 소수) 계정을 사용합니다.
+// 이 프로젝트는 "로그인한 사용자 = 관리자"로 간주합니다. 고객용 회원가입 기능이 없으므로 안전합니다.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+
+      match /groups/{groupId} {
+        allow read: if true;
+        allow write: if isAdmin();
+
+        match /items/{itemId} {
+          allow read: if true;
+          allow write: if isAdmin();
+        }
+      }
+    }
+
+    match /notices/{noticeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

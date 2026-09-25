@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>이용안내 · 비뇽</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="page-container static-content">
+    <h1>이용안내</h1>
+
+    <h2>주문 방법</h2>
+    <ol>
+      <li>서비스 페이지에서 원하는 카테고리를 선택합니다.</li>
+      <li>가격표에서 원하는 항목을 골라 "담기" 합니다.</li>
+      <li>빠른주문 페이지에서 담은 항목과 연락처를 확인한 뒤 제출합니다.</li>
+      <li>주문 접수 후 자동으로 카카오톡 상담 채널이 열립니다. 복사된 주문 내용을 채팅창에 붙여넣어주세요.</li>
+      <li>상담원이 총액과 결제(계좌이체 등) 안내를 드리며, 입금 확인 후 작업이 진행됩니다.</li>
+    </ol>
+
+    <h2>유의사항</h2>
+    <ul>
+      <li>본 사이트는 온라인 결제를 지원하지 않으며, 결제는 카카오톡 상담을 통해 개별 안내됩니다.</li>
+      <li>작업 진행 중 동시 접속 2회 이상 발생 시 환불 없이 작업이 중단될 수 있습니다.</li>
+      <li>일부 항목은 조건(퀘스트 진행 여부 등)에 따라 추가 금액이 발생할 수 있으며, 가격표의 비고란을 확인해주세요.</li>
+      <li>게임 대리 작업(파워레벨링, 재화 파밍)은 대상 게임사의 이용약관에 따라 제재 대상이 될 수 있습니다. 이용 전 반드시 게임사 정책을 확인해주세요.</li>
+    </ul>
+
+    <h2>환불 규정</h2>
+    <p>작업 시작 전 취소 시 전액 환불되며, 작업 진행 중 취소 시에는 진행률에 따라 부분 환불됩니다. 자세한 사항은 카카오톡 상담을 통해 안내드립니다.</p>
+
+    <h2>문의</h2>
+    <p>카카오톡 채널을 통해 언제든 문의해주세요.</p>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script type="module">
+    import { renderHeader, renderFooter, renderFloatingKakao } from "./js/common.js";
+    renderHeader("guide");
+    renderFooter();
+    renderFloatingKakao();
+  </script>
+</body>
+</html>
