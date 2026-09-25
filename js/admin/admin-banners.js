@@ -7,9 +7,11 @@ import {
   getSiteSettings,
   updateSiteSettings,
 } from "../banners.js";
+import { siteConfig } from "../site-config.js";
+import { HERO_TITLE_MAX, heroTitleError, normalizeHeroTitle } from "../common.js";
 
 await requireAuth();
-const content = renderAdminShell("banners", "배너 관리", "홈 화면에 자동으로 넘어가는 배너예요. 가로로 긴 이미지(예: 1600×600)가 가장 잘 어울려요.");
+const content = renderAdminShell("banners", "홈 화면 관리", "홈 첫 화면의 메인 문구와 자동으로 넘어가는 배너를 관리해요.");
 
 const state = { banners: [], settings: {} };
 
@@ -44,7 +46,29 @@ function bannerCard(b, i) {
 function render() {
   const interval = state.settings.bannerIntervalSeconds ?? 4;
 
+  const heroTitle = normalizeHeroTitle(state.settings.heroTitle) || siteConfig.tagline;
+
   content.innerHTML = `
+    <section class="admin-card">
+      <div class="col-head"><h2>메인 문구</h2><span class="muted" style="font-size:12px;">홈 첫 화면의 큰 제목</span></div>
+      <p class="help">
+        화면이 깨지지 않도록 <b>최대 ${HERO_TITLE_MAX}자</b>(띄어쓰기 포함)까지 쓸 수 있고,
+        띄어쓰기 없이 붙은 단어는 <b>8자</b>까지만 돼요. 아래 미리보기는 휴대폰 화면 폭 기준이에요.
+      </p>
+      <form class="stack-form" id="hero-form">
+        <div class="counter-input">
+          <input name="heroTitle" maxlength="${HERO_TITLE_MAX}" value="${escapeHtml(heroTitle)}" autocomplete="off" />
+          <span data-hero-counter></span>
+        </div>
+        <p class="field-error" data-hero-error hidden></p>
+        <div class="hero-preview"><div class="hero-preview-phone"><span data-hero-preview></span></div></div>
+        <div class="form-actions">
+          <button type="submit" class="btn-sm primary">문구 저장</button>
+          <button type="button" class="btn-sm" data-hero-reset>기본 문구로 되돌리기</button>
+        </div>
+      </form>
+    </section>
+
     <section class="admin-card">
       <div class="col-head"><h2>배너 올리기</h2></div>
       <form class="upload-drop" id="upload-banner-form">
@@ -78,12 +102,69 @@ function render() {
           : `<p class="empty-state">아직 배너가 없어요. 위에서 이미지를 올려보세요.</p>`
       }
     </section>`;
+
+  refreshHeroForm();
 }
+
+// 메인 문구 입력칸: 글자 수, 규칙 위반 여부, 미리보기를 입력할 때마다 갱신한다.
+function refreshHeroForm() {
+  const input = content.querySelector('#hero-form input[name="heroTitle"]');
+  if (!input) return;
+  const value = normalizeHeroTitle(input.value);
+  const error = heroTitleError(value);
+  const length = [...value].length;
+
+  const counter = content.querySelector("[data-hero-counter]");
+  counter.textContent = `${length} / ${HERO_TITLE_MAX}`;
+  counter.classList.toggle("is-full", length >= HERO_TITLE_MAX);
+
+  const errorEl = content.querySelector("[data-hero-error]");
+  errorEl.textContent = error || "";
+  errorEl.hidden = !error;
+  input.classList.toggle("is-invalid", !!error);
+
+  content.querySelector("[data-hero-preview]").innerHTML = (value || " ")
+    .split(" ")
+    .map((w) => `<span class="pw">${escapeHtml(w)}</span>`)
+    .join(" ");
+  content.querySelector('#hero-form [type="submit"]').disabled =
+    !!error || value === (normalizeHeroTitle(state.settings.heroTitle) || siteConfig.tagline);
+}
+
+content.addEventListener("input", (e) => {
+  if (e.target.closest("#hero-form")) refreshHeroForm();
+});
+
+content.addEventListener("click", (e) => {
+  if (!e.target.closest("[data-hero-reset]")) return;
+  content.querySelector('#hero-form input[name="heroTitle"]').value = siteConfig.tagline;
+  refreshHeroForm();
+});
 
 // 업로드: 여러 장을 동시에 올리고, 실패하면 실제 원인을 그대로 보여준다.
 content.addEventListener("submit", async (e) => {
   e.preventDefault();
   const form = e.target;
+
+  if (form.id === "hero-form") {
+    const value = normalizeHeroTitle(form.heroTitle.value);
+    const error = heroTitleError(value);
+    if (error) {
+      toast(error, "error");
+      return;
+    }
+    // 기본 문구와 같으면 저장값을 비워서, 나중에 기본 문구가 바뀌어도 따라가게 한다.
+    const saved = value === siteConfig.tagline ? "" : value;
+    const ok = await withBusy(form.querySelector('[type="submit"]'), async () => {
+      await updateSiteSettings({ heroTitle: saved });
+      return true;
+    }, { success: "메인 문구를 저장했어요. 홈에 바로 반영돼요." });
+    if (ok) {
+      state.settings.heroTitle = saved;
+      refreshHeroForm();
+    }
+    return;
+  }
 
   if (form.id === "interval-form") {
     const seconds = Number(form.interval.value) || 4;

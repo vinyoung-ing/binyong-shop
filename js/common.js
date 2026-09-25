@@ -146,6 +146,27 @@ export function renderFooter() {
   `;
 }
 
+// 홈 메인 문구 제한. 제목은 단어 단위로 줄바꿈되므로(단어 중간에서 안 끊김)
+// 모바일 폭(한 줄 약 9자)을 넘는 긴 단어가 있으면 화면 밖으로 삐져나간다.
+export const HERO_TITLE_MAX = 22;
+export const HERO_WORD_MAX = 8;
+
+export function normalizeHeroTitle(text) {
+  return String(text ?? "").replace(/\s+/g, " ").trim();
+}
+
+// 문제가 없으면 null, 있으면 사용자에게 보여줄 메시지를 돌려준다.
+export function heroTitleError(text) {
+  const t = normalizeHeroTitle(text);
+  if (!t) return "문구를 입력해주세요.";
+  if ([...t].length > HERO_TITLE_MAX) return `최대 ${HERO_TITLE_MAX}자까지 입력할 수 있어요.`;
+  const longWord = t.split(" ").find((w) => [...w].length > HERO_WORD_MAX);
+  if (longWord) {
+    return `"${longWord}"처럼 띄어쓰기 없이 ${HERO_WORD_MAX}자를 넘는 단어는 모바일에서 화면을 벗어나요. 중간에 띄어쓰기를 넣어주세요.`;
+  }
+  return null;
+}
+
 export function escapeHtml(str) {
   if (str == null) return "";
   return String(str)

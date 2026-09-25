@@ -20,7 +20,7 @@ const NAV_ITEMS = [
   { key: "dashboard", href: "dashboard.html", label: "대시보드", icon: "◎" },
   { key: "orders", href: "orders.html", label: "주문 관리", icon: "✉" },
   { key: "categories", href: "categories.html", label: "가격표 관리", icon: "☰" },
-  { key: "banners", href: "banners.html", label: "배너 관리", icon: "▣" },
+  { key: "banners", href: "banners.html", label: "홈 화면", icon: "▣" },
   { key: "notices", href: "notices.html", label: "공지사항", icon: "✎" },
 ];
 
